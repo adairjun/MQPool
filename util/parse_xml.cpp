@@ -32,8 +32,8 @@ ParseXmlObj::~ParseXmlObj() {
 
 void ParseXmlObj::Dump() const {
   printf("\n=====ParseXmlObj Dump START ========== \n");
-  printf("configPath__=%s", configPath_.c_str());
-  printf("pt_=%p", pt_);
+  printf("configPath__=%s ", configPath_.c_str());
+  printf("pt_=%p ", pt_);
   printf("\n===ParseXMlObj DUMP END ============\n");
 }
 
@@ -66,6 +66,13 @@ string ParseXmlObj::GetChildKey(const ptree::iterator &it) {
   return it->first;
 }
 
+string ParseXmlObj::GetChildData(const ptree::iterator &it) {
+  if(it == End()) {
+    return string();
+  }
+  return it->second.data();
+}
+
 ParseXmlObj ParseXmlObj::GetChild(const ptree::iterator &it) {
   if(it == End()) {
     return ParseXmlObj(NULL);
@@ -74,8 +81,8 @@ ParseXmlObj ParseXmlObj::GetChild(const ptree::iterator &it) {
 }
 
 ParseXmlObj ParseXmlObj::GetChild(const string& path) {
-  if (path == "") {
-	  return ParseXmlObj(NULL);
+  if (pt_ == NULL) {
+	return ParseXmlObj(NULL);
   }
   auto child = pt_->get_child_optional(path);
   if(child) {
@@ -84,8 +91,7 @@ ParseXmlObj ParseXmlObj::GetChild(const string& path) {
   return ParseXmlObj(NULL);
 }
 
-string ParseXmlObj::GetAttr(string path, const string& attr)
-{
+string ParseXmlObj::GetAttr(string path, const string& attr) {
   if(pt_ == NULL || attr == "")
     return "";
   if(path != ""){
@@ -96,16 +102,14 @@ string ParseXmlObj::GetAttr(string path, const string& attr)
   return pt_->get<string>(path, "");
 }
 
-string ParseXmlObj::GetValue(const string& path)
-{
+string ParseXmlObj::GetValue(const string& path) {
   if(pt_ == NULL){
 	return "";
   }
   return pt_->get<string>(path, "");
 }
 
-void ParseXmlObj::PutChild(const string& key, const ParseXmlObj& child)
-{
+void ParseXmlObj::PutChild(const string& key, const ParseXmlObj& child) {
   if(pt_ != NULL) {
     pt_->push_back(make_pair(key, *(child.GetPtree())));
   }

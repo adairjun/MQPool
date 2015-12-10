@@ -39,6 +39,10 @@ class ParseXmlObj {
   string GetChildKey(const ptree::iterator &it);
 
   /*
+   * get child data by iterator
+   */
+  string GetChildData(const ptree::iterator &it);
+  /*
    * get child by iterator
    */
   ParseXmlObj GetChild(const ptree::iterator &it);
