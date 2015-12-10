@@ -10,7 +10,7 @@ using namespace std;
 #include <sys/ipc.h>  
 #include <sys/stat.h>  
 #include <sys/msg.h>  
-#define MSG_FILE "server.c"  
+#define MSG_FILE "key" 
 #define BUFFER 255  
 #define PERM S_IRUSR|S_IWUSR  
 struct msgtype {  
