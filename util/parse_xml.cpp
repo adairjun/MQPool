@@ -131,15 +131,13 @@ void ParseXmlObj::PutAttr(string path, const string& attribute, const string& at
   }
 }
 
-void ParseXmlObj::PutAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr, const string& attrvalue) {
-  auto child = pt_->get_child(path);
-  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
-    auto nextchild = pos->second.get_child("");
-    for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
-      if (nextpos->second.get<string>(know_attr) == know_value) {
-        //TODO 
-      }
-    }
+void ParseXmlObj::AddLineByAttr(string path, const map<string, string>& key_value_map) {
+  if (pt_ != NULL) {
+    ptree temp;
+    for (auto myPair : key_value_map) {
+      temp.put<string>("<xmlattr>." + myPair.first, myPair.second.data());  
+    } 
+    pt_->add_child(path, temp);
   }
 }
 

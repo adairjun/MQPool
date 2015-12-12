@@ -81,7 +81,7 @@ class ParseXmlObj {
 
   /*
    * get attribute by path
-   * GetAttr("errors", "id") get the first attribute
+   * GetAttrArray("errors", "id") get the first attribute
    *  <errors>
    *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" test="ttttt"/>
    *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
@@ -156,15 +156,30 @@ class ParseXmlObj {
   void PutAttr(string path, const string& attribute, const string& attrvalue);
 
   /*
-   * put attribute by path and attribute
-   * PutAttr("errors", "id", "DB_ERROR_EXECUTE", "value") get the "value" attribute where "id" is "DB_ERROR_EXECUTE"
-   * 注意这个接口的path传的是errors 而不是errors.error
+   * 这个通过attribute找到对应的标签，再在标签中加入一个attribute的功能很难实现,所以这个函数就没有实现 PutAttrByAttr()
+   * 而且我觉得要用到这个功能会比较少
+   */
+   
+  /*
+   *
+   * add a new line in xml 
+   * myMap.insert("id", "ttt");
+   * myMap.insert("value", "000");
+   * myMap.insert("prompt", "ppp");
+   * myMap.insert("msg", "mmm");
+   * AddLineByAttribute("errors.error", myMap);
    *  <errors>
-   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败"/>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" />
    *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
    *  </errors>
+   * new:
+   *  <errors>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" />
+   *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
+   *  <error id="ttt" value="000" prompt="ppp" msg="mmm"/>
+   *  </errors>
    */
-  void PutAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr, const string& attrvalue);
+  void AddLineByAttr(string path, const map<string, string>& key_value_map);
 
   /*
    * save config
