@@ -31,12 +31,31 @@ class ParseJsonObj {
   ptree* GetPtree() const;
 
   /*
-   * get json data 
+   * GetChildData("root.child") will get "a" and "b"
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *     }
+   *  }
    */
   map<string, string> GetChildData(const string& path);
 
   /*
-   * get json array data 
+   * GetChildDataArray("root.child") will get "a" and "b"
+   * { "root":
+   *     { "child":
+   *        [
+   *        { "a": "1",
+   *          "b": "2" 
+   *        },
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *        ]
+   *     }
+   *  }
    */
   vector<map<string, string> > GetChildDataArray(const string& path);
 

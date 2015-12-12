@@ -30,26 +30,29 @@ class ParseXmlObj {
   ptree* GetPtree() const;
 
   /*
-   *
+   * GetChildData("root.child") will get <a> and <b>
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   * </root>
    */
   map<string, string> GetChildData(const string& path);
 
   /*
-   * 这里就没有必要写GetChildData了,因为json有数组的概念但是xml没有 
-   * 这里是拿到这种形式的数据:
+   * 请注意这里和parse_json当中的GetChildData的区别，严格的来说xml并没有数组的概念
+   * GetChildData("root") will get <a> and <b>
    * <root>
    *   <child>
+   *     <a></a>
+   *     <b></b>
    *   </child>
    *   <child>
+   *     <a></a>
+   *     <b></b>
    *   </child>
    * </root>
-   * 是将child当中的数据放入map里面,然后一个child是一个map,再把map放入vector当中
-   * 和这种形式:
-   * <root>
-   *   <child>
-   *   </child>
-   * </root>
-   * 是一样的,所以说在xml当中GetChildDataArray和GetChildData是一样的
    */
   vector<map<string, string> > GetChildDataArray(const string& path);
 

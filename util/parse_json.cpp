@@ -48,17 +48,14 @@ vector<map<string, string> > ParseJsonObj::GetChildDataArray(const string& path)
   map<string, string> key_value_map;
 
   auto child = pt_->get_child(path);
-  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
-    //这里应该遍历数组
-    for (ptree::value_type &v : pos->second.get_child("")) {
+    for (ptree::value_type &v : child.get_child("")) {
       auto nextchild = v.second.get_child("");
-      for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
-        key_value_map.insert(make_pair(nextpos->first, nextpos->second.data()));        
+      for (auto pos = nextchild.begin(); pos!= nextchild.end(); ++pos) {
+        key_value_map.insert(make_pair(pos->first, pos->second.data()));        
       }
       result_array.push_back(key_value_map);
       key_value_map.clear();
     }
-  }
   return std::move(result_array);
 }
 
