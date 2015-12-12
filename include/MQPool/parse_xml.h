@@ -6,7 +6,7 @@
  */
 
 #include <string>
-#include <vector>
+#include <vector> 
 #include <map>
 #include <boost/property_tree/ptree.hpp>
 
@@ -30,6 +30,17 @@ class ParseXmlObj {
   ptree* GetPtree() const;
 
   /*
+   * GetChildData("root.child.a") will get <a> 
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   * </root>
+   */
+  string GetChildData(const string& path);
+
+  /*
    * GetChildData("root.child") will get <a> and <b>
    * <root>
    *   <child>
@@ -38,10 +49,11 @@ class ParseXmlObj {
    *   </child>
    * </root>
    */
-  map<string, string> GetChildData(const string& path);
+  map<string, string> GetChildDataMap(const string& path);
 
   /*
    * 请注意这里和parse_json当中的GetChildData的区别，严格的来说xml并没有数组的概念
+   * 这里只是为了方便拿数据所以实现了这个接口
    * GetChildData("root") will get <a> and <b>
    * <root>
    *   <child>
@@ -58,41 +70,106 @@ class ParseXmlObj {
 
   /*
    * get attribute by path
-   * path is relative to current path.
+   * GetAttr("errors.error", "id") get the first attribute
+   *  <errors>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" test="ttttt"/>
+   *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
+   *  </errors>
+   * the result is "1"
    */
   string GetAttr(string path, const string& attr);
 
   /*
-   * get value by path
-   * if path == "", return value of this ptree
+   * get attribute by path
+   * GetAttr("errors", "id") get the first attribute
+   *  <errors>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" test="ttttt"/>
+   *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
+   *  </errors>
+   * the result is a vector
    */
-  string GetValue(const string& path);
+  vector<string> GetAttrArray(string path, const string& attr);
+
+  /*
+   * get attribute by path and attribute
+   * GetAttr("errors", "id", "DB_ERROR_EXECUTE", "value") get the "value" attribute where "id" is "DB_ERROR_EXECUTE"
+   * 注意这个接口的path传的是errors 而不是errors.error
+   *  <errors>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败" test="ttttt"/>
+   *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
+   *  </errors>
+   * result is "1"
+   */
+  string GetAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr);
 
   //===========================================================
   /*
-   * push back a child
+   * PutChildData("testput", "testput") will add "testput" in
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   * </root>
+   * new:
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   * </root>
+   * <testput>"testput"</testput>
    */
-  void PutChild(const string& key, const ParseXmlObj& child);
+  void PutChildData(const string& key, const string& value);
 
   /*
-   * put arrribute
+   * myMap.insert(make_pair("a", "1"))  myMap.insert(make_pair("b", "2"))
+   * PutChildData("root.newchild", myMap) will add "newchild" in
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   * </root>
+   * new:
+   * <root>
+   *   <child>
+   *     <a></a>
+   *     <b></b>
+   *   </child>
+   *   <newchild>
+   *     <a></a>
+   *     <b></b>
+   *   </newchild>
+   * </root> 
    */
-  bool PutAttr(string path, const string& attribute, const string& attrvalue);
+  void PutChildDataMap(const string& key, const map<string, string>& key_value_map);
 
   /*
-   * put value
+   * 上面说过了xml并没有数组的概念,所以这里没有 PutChildDataArray()函数
    */
-  bool PutValue(const string& path, const string& value);
 
   /*
-   * add value
+   * PutAttr("errors.error", "id", "DB_ERROR_EXECUTE") 
+   * <error id="DB_ERROR_EXECUTE"/>
    */
-  bool AddValue(const string& path, const string& value);
+  void PutAttr(string path, const string& attribute, const string& attrvalue);
+
+  /*
+   * put attribute by path and attribute
+   * PutAttr("errors", "id", "DB_ERROR_EXECUTE", "value") get the "value" attribute where "id" is "DB_ERROR_EXECUTE"
+   * 注意这个接口的path传的是errors 而不是errors.error
+   *  <errors>
+   *  <error id="DB_ERROR_EXECUTE" value="1" prompt="操作数据库失败" msg="操作数据库失败"/>
+   *  <error id="DB_ERROR_COMMAND" value="2" prompt="创建数据库操作指令失败" msg="创建数据库操作指令失败"/>
+   *  </errors>
+   */
+  void PutAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr, const string& attrvalue);
 
   /*
    * save config
    */
-  void SaveConfig(const string& configPath);
+  void SaveConfig();
 
  private:
   string configPath_; 

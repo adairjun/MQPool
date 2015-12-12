@@ -31,6 +31,18 @@ class ParseJsonObj {
   ptree* GetPtree() const;
 
   /*
+   * GetChildData("root.child.a") will get "a" 
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *     }
+   *  }
+   */
+  string GetChildData(const string& path);
+
+  /*
    * GetChildData("root.child") will get "a" and "b"
    * { "root":
    *     { "child":
@@ -40,7 +52,7 @@ class ParseJsonObj {
    *     }
    *  }
    */
-  map<string, string> GetChildData(const string& path);
+  map<string, string> GetChildDataMap(const string& path);
 
   /*
    * GetChildDataArray("root.child") will get "a" and "b"
@@ -61,14 +73,97 @@ class ParseJsonObj {
 
   //===========================================================
   /*
-   * push back a child
+   * PutChildData("testput", "testput") will add "testput" in
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *     }
+   *  }
+   * new:
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *     },
+   *   "testput": "testput"
+   *  }
    */
-  void PutChild(const string& key, const ParseJsonObj& child);
+  void PutChildData(const string& key, const string& value);
+
+  /*
+   * myMap.insert(make_pair("a", "1"))  myMap.insert(make_pair("b", "2"))
+   * PutChildData("root.newchild", myMap) will add "newchild" in
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *     }
+   *  }
+   * new:
+   * { "root":
+   *     { "child":
+   *        { "a": "1",
+   *          "b": "2" 
+   *        },
+   *        "newchild":
+   *        { "a": "1",
+   *          "b": "2"
+   *        }
+   *     }
+   *  }
+   */
+  void PutChildDataMap(const string& key, const map<string, string>& key_value_map);
+
+  /*
+   * myMap.insert(make_pair("a", "1"))  myMap.insert(make_pair("b", "2"))
+   * yourMap.insert(make_pair("a", "1"))  yourMap.insert(make_pair("b", "2"))
+   * vector<map<string, string> > array;  array.push_back(myMap); array.push_back(yourMap);
+   * PutChildData("root.nee", array) will add "nee" in
+   * { "root":
+   *     { "child":
+   *        [
+   *        { "a": "1",
+   *          "b": "2" 
+   *        },
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *        ]
+   *     }
+   * }
+   * new:
+   * { "root":
+   *     { "child":
+   *        [
+   *        { "a": "1",
+   *          "b": "2" 
+   *        },
+   *        { "a": "1",
+   *          "b": "2" 
+   *        }
+   *        ],
+   *        "nee": 
+   *        [
+   *        { "a": "1",
+   *          "b": "2"
+   *        },
+   *        { "a": "1",
+   *          "b": "2"
+   *        }
+   *        ]
+   *     }
+   * }
+   */
+  void PutChildDataArray(const string& key, const vector<map<string, string> >& array_list); 
 
   /*
    * save config
    */
-  void SaveConfig(const string& configPath);
+  void SaveConfig();
 
  private:
   string configPath_; 

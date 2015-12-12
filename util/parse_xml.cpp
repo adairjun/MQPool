@@ -33,7 +33,11 @@ ptree* ParseXmlObj::GetPtree() const {
 	return pt_;
 }
 
-map<string, string> ParseXmlObj::GetChildData(const string& path) {
+string ParseXmlObj::GetChildData(const string& path) {
+  return pt_->get<string>(path);
+}
+
+map<string, string> ParseXmlObj::GetChildDataMap(const string& path) {
   map<string, string> key_value_map;
  
   auto child = pt_->get_child(path);
@@ -70,65 +74,77 @@ string ParseXmlObj::GetAttr(string path, const string& attr) {
   return pt_->get<string>(path, "");
 }
 
-string ParseXmlObj::GetValue(const string& path) {
-  if(pt_ == NULL){
-	return "";
+vector<string> ParseXmlObj::GetAttrArray(string path, const string& attr) {
+  vector<string> result;
+  if (pt_ != NULL && attr != "") {
+    auto child = pt_->get_child(path);
+    for (auto pos = child.begin(); pos!= child.end(); ++pos) {
+      auto nextchild = pos->second.get_child("");
+      for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
+        result.push_back(nextpos->second.get<string>(attr));
+      }
+    }
   }
-  return pt_->get<string>(path, "");
+  return std::move(result);
 }
 
-void ParseXmlObj::PutChild(const string& key, const ParseXmlObj& child) {
+string ParseXmlObj::GetAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr) {
+  string result = "";
+  auto child = pt_->get_child(path);
+  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
+    auto nextchild = pos->second.get_child("");
+    for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
+      if (nextpos->second.get<string>(know_attr) == know_value) {
+        result = nextpos->second.get<string>(attr); 
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+
+void ParseXmlObj::PutChildData(const string& key, const string& value) {
   if(pt_ != NULL) {
-    pt_->push_back(make_pair(key, *(child.GetPtree())));
+    pt_->put(key, value);
   }
 }
 
-bool ParseXmlObj::PutAttr(string path, const string& attribute, const string& attrvalue) {
-  if(pt_ == NULL || attribute == "") {
-	return false;
+void ParseXmlObj::PutChildDataMap(const string& key, const map<string, string>& key_value_map) {
+  if(pt_ != NULL) {
+    ptree child;
+    for (auto myPair : key_value_map) {
+      child.put(myPair.first, myPair.second);
+    }
+    pt_->add_child(key, child);
   }
-  try{
+}
+
+void ParseXmlObj::PutAttr(string path, const string& attribute, const string& attrvalue) {
+  if (pt_ != NULL) {
 	if(path != "") {
 	  path += "."; //add the domain descriptor
 	}
 	path += "<xmlattr>.";
 	path += attribute;
 	pt_->put<string>(path, attrvalue);
-	return true;
-  } catch(...) {
-	//        cerr << "PutAttr error" << endl;
-	return false;
   }
 }
 
-bool ParseXmlObj::PutValue(const string& path, const string& value) {
-  if(pt_ == NULL) {
-	        return false;
-  }
-  try{
-    pt_->put<string>(path, value);
-	return true;
-  } catch(...) {
-	//        cerr << "PutValue error" << endl;
-  return false;
-  }
-}
-
-bool ParseXmlObj::AddValue(const string& path, const string& value) {
-  if(pt_ == NULL || path.empty()) {
-    return false;
-  }
-  try{
-    pt_->add<string>(path, value);
-    return true;
-    } catch(...) {
-//        cerr << "AddValue error" << endl;
-    return false;
+void ParseXmlObj::PutAttrByAttr(string path, const string& know_attr, const string& know_value, const string& attr, const string& attrvalue) {
+  auto child = pt_->get_child(path);
+  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
+    auto nextchild = pos->second.get_child("");
+    for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
+      if (nextpos->second.get<string>(know_attr) == know_value) {
+        //TODO 
+      }
+    }
   }
 }
 
-void ParseXmlObj::SaveConfig(const string& configPath) {
+void ParseXmlObj::SaveConfig() {
   if(pt_ != NULL) {
-    boost::property_tree::write_xml(configPath, *pt_);
+    boost::property_tree::write_xml(configPath_, *pt_);
   }
 }

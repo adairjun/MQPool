@@ -33,7 +33,11 @@ ptree* ParseJsonObj::GetPtree() const {
   return pt_;
 }
 
-map<string, string> ParseJsonObj::GetChildData(const string& path) {
+string ParseJsonObj::GetChildData(const string& path) {
+  return pt_->get<string>(path);
+}
+
+map<string, string> ParseJsonObj::GetChildDataMap(const string& path) {
   map<string, string> key_value_map;
   
   auto child = pt_->get_child(path);
@@ -59,14 +63,38 @@ vector<map<string, string> > ParseJsonObj::GetChildDataArray(const string& path)
   return std::move(result_array);
 }
 
-void ParseJsonObj::PutChild(const string& key, const ParseJsonObj& child) {
+void ParseJsonObj::PutChildData(const string& key, const string& value) {
   if(pt_ != NULL) {
-    pt_->push_back(make_pair(key, *(child.GetPtree())));
+    pt_->put(key, value);
   }
 }
 
-void ParseJsonObj::SaveConfig(const string& configPath) {
+void ParseJsonObj::PutChildDataMap(const string& key, const map<string, string>& key_value_map) {
   if(pt_ != NULL) {
-    boost::property_tree::write_json(configPath, *pt_);
+    ptree child;
+    for (auto myPair : key_value_map) {
+      child.put(myPair.first, myPair.second);
+    }
+    pt_->add_child(key, child);
+  }
+}
+
+void ParseJsonObj::PutChildDataArray(const string& key, const vector<map<string, string> >& array_list) {
+  if(pt_ != NULL) {
+    ptree first;
+    for (auto key_value_map : array_list) {
+      ptree second;
+      for (auto myPair : key_value_map) {
+        second.put(myPair.first, myPair.second);
+      } 
+      first.push_back(make_pair("", second)); 
+    }
+    pt_->add_child(key, first);
+  }
+}
+
+void ParseJsonObj::SaveConfig() {
+  if(pt_ != NULL) {
+    boost::property_tree::write_json(configPath_, *pt_);
   }
 }
