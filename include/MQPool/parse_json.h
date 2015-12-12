@@ -7,11 +7,12 @@
  */
 
 #include <string>
+#include <vector>
 #include <map>
 #include <boost/property_tree/ptree.hpp>
 
 using std::string;
-using std::stringstream;
+using std::vector;
 using std::map;
 using std::make_pair;
 using boost::property_tree::ptree;
@@ -20,8 +21,9 @@ class ParseJsonObj {
  public:
   explicit ParseJsonObj();
   explicit ParseJsonObj(string configPath);
-  explicit ParseJsonObj(ptree* it);
   virtual ~ParseJsonObj();
+  ParseJsonObj(const ParseJsonObj&) = delete;
+  ParseJsonObj& operator=(const ParseJsonObj&) = delete;
   void Dump() const;
 
   string GetConfigPath() const;
@@ -29,30 +31,14 @@ class ParseJsonObj {
   ptree* GetPtree() const;
 
   /*
-   * get begin iterator and end iterator
+   * get json data 
    */
-  ptree::iterator Begin() const;
-  ptree::iterator End() const;
+  map<string, string> GetChildData(const string& path);
 
   /*
-   * get child key by iterator
+   * get json array data 
    */
-  string GetChildKey(const ptree::iterator &it);
-
-  /*
-   * get child data by iterator
-   */
-  string GetChildData(const ptree::iterator &it);
-  /*
-   * get child by iterator
-   */
-  ParseJsonObj GetChild(const ptree::iterator &it);
-
-  /*
-   * get child by path
-   * path is relative to current path.
-   */
-  ParseJsonObj GetChild(const string& path);
+  vector<map<string, string> > GetChildDataArray(const string& path);
 
   //===========================================================
   /*
@@ -66,7 +52,6 @@ class ParseJsonObj {
   void SaveConfig(const string& configPath);
 
  private:
-  bool needDelete_;
   string configPath_; 
   //这里不用ptree对象而用指针的意义在于如果使用ptree对象的话，构造的时候就必须完全构造这个对象
   ptree* pt_;

@@ -6,11 +6,12 @@
  */
 
 #include <string>
+#include <vector>
 #include <map>
 #include <boost/property_tree/ptree.hpp>
 
 using std::string;
-using std::stringstream;
+using std::vector;
 using std::map;
 using std::make_pair;
 using boost::property_tree::ptree;
@@ -19,8 +20,9 @@ class ParseXmlObj {
  public:
   explicit ParseXmlObj();
   explicit ParseXmlObj(string configPath);
-  explicit ParseXmlObj(ptree* it);
   virtual ~ParseXmlObj();
+  ParseXmlObj(const ParseXmlObj&) = delete;
+  ParseXmlObj& operator=(const ParseXmlObj&) = delete;
   void Dump() const;
 
   string GetConfigPath() const;
@@ -28,30 +30,28 @@ class ParseXmlObj {
   ptree* GetPtree() const;
 
   /*
-   * get begin iterator and end iterator
+   *
    */
-  ptree::iterator Begin() const;
-  ptree::iterator End() const;
+  map<string, string> GetChildData(const string& path);
 
   /*
-   * get child key by iterator
+   * 这里就没有必要写GetChildData了,因为json有数组的概念但是xml没有 
+   * 这里是拿到这种形式的数据:
+   * <root>
+   *   <child>
+   *   </child>
+   *   <child>
+   *   </child>
+   * </root>
+   * 是将child当中的数据放入map里面,然后一个child是一个map,再把map放入vector当中
+   * 和这种形式:
+   * <root>
+   *   <child>
+   *   </child>
+   * </root>
+   * 是一样的,所以说在xml当中GetChildDataArray和GetChildData是一样的
    */
-  string GetChildKey(const ptree::iterator &it);
-
-  /*
-   * get child data by iterator
-   */
-  string GetChildData(const ptree::iterator &it);
-  /*
-   * get child by iterator
-   */
-  ParseXmlObj GetChild(const ptree::iterator &it);
-
-  /*
-   * get child by path
-   * path is relative to current path.
-   */
-  ParseXmlObj GetChild(const string& path);
+  vector<map<string, string> > GetChildDataArray(const string& path);
 
   /*
    * get attribute by path
@@ -92,7 +92,6 @@ class ParseXmlObj {
   void SaveConfig(const string& configPath);
 
  private:
-  bool needDelete_;
   string configPath_; 
   //这里不用ptree对象而用指针的意义在于如果使用ptree对象的话，构造的时候就必须完全构造这个对象
   ptree* pt_;

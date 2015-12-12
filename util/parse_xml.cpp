@@ -3,7 +3,6 @@
 
 
 ParseXmlObj::ParseXmlObj() {
-	needDelete_ = true;
     configPath_ = "../config/messageQueue.xml";
     pt_ = new ptree;
     boost::property_tree::read_xml(configPath_, *pt_);
@@ -11,23 +10,12 @@ ParseXmlObj::ParseXmlObj() {
 
 ParseXmlObj::ParseXmlObj(string configPath)
     : configPath_(configPath){
-	needDelete_ = true;
 	pt_ = new ptree;
 	boost::property_tree::read_xml(configPath_, *pt_);
 }
 
-ParseXmlObj::ParseXmlObj(ptree* it)
-    : pt_(it){
-	// 多加一个成员needDelete的意义就在这里，当使用ptree指针来初始化ParseXmlObj对象的时候，就不能delete了
-	// 否则会导致传给这个构造函数的指针成为野指针
-	needDelete_ = false;
-	configPath_ = "Constructe by ptree pointer";
-}
-
 ParseXmlObj::~ParseXmlObj() {
-  if (needDelete_ && pt_ != NULL) {
-    delete pt_;
-  }
+  delete pt_;
 }
 
 void ParseXmlObj::Dump() const {
@@ -45,50 +33,30 @@ ptree* ParseXmlObj::GetPtree() const {
 	return pt_;
 }
 
-ptree::iterator ParseXmlObj::Begin() const {
-  if (pt_ == NULL) {
-	  return ptree::iterator();
+map<string, string> ParseXmlObj::GetChildData(const string& path) {
+  map<string, string> key_value_map;
+ 
+  auto child = pt_->get_child(path);
+  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
+    key_value_map.insert(make_pair(pos->first, pos->second.data()));
   }
-  return pt_->begin();
+  return std::move(key_value_map);
 }
 
-ptree::iterator ParseXmlObj::End() const {
-  if (pt_ == NULL) {
-	  return ptree::iterator();
+vector<map<string, string> > ParseXmlObj::GetChildDataArray(const string& path) {
+  vector<map<string, string> > result_array;
+  map<string, string> key_value_map;
+ 
+  auto child = pt_->get_child(path);
+  for (auto pos = child.begin(); pos!= child.end(); ++pos) {
+    auto nextchild = pos->second.get_child("");
+    for (auto nextpos = nextchild.begin(); nextpos!= nextchild.end(); ++nextpos) {
+      key_value_map.insert(make_pair(nextpos->first, nextpos->second.data()));
+    }
+    result_array.push_back(key_value_map);
+    key_value_map.clear();
   }
-  return pt_->end();
-}
-
-string ParseXmlObj::GetChildKey(const ptree::iterator &it) {
-  if(it == End()) {
-    return string();
-  }
-  return it->first;
-}
-
-string ParseXmlObj::GetChildData(const ptree::iterator &it) {
-  if(it == End()) {
-    return string();
-  }
-  return it->second.data();
-}
-
-ParseXmlObj ParseXmlObj::GetChild(const ptree::iterator &it) {
-  if(it == End()) {
-    return ParseXmlObj(NULL);
-  }
-  return ParseXmlObj((&it->second));
-}
-
-ParseXmlObj ParseXmlObj::GetChild(const string& path) {
-  if (pt_ == NULL) {
-	return ParseXmlObj(NULL);
-  }
-  auto child = pt_->get_child_optional(path);
-  if(child) {
-    return ParseXmlObj(&(child.get()));
-  }
-  return ParseXmlObj(NULL);
+  return std::move(result_array);
 }
 
 string ParseXmlObj::GetAttr(string path, const string& attr) {
