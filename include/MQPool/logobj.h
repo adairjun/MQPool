@@ -63,6 +63,12 @@ class LogObj {
 
   void SetLineBufferSize(unsigned lineBufferSize);
 
+  void MakeLog(LogLevel logLevel, const char *pFormat, va_list sAp);
+
+ private:
+  string GetCurrTime(int flag) const;
+  void CheckFile();
+
  private:
   string prefix_;                         //日志文件名，这里以模块名称来命名
   string suffix_;                         //日志文件名，后缀统一为：.log

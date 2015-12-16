@@ -12,7 +12,7 @@ INCLUDE := -I/usr/local/include -I./include
 LIBS := -L/usr/local/lib -lgtest -lpthread -lglog
 
 CFLAGS := 
-CPPFLAGS := -std=c++0x -O2 -g -fPIC -DNDEBUG
+CPPFLAGS := -std=c++11 -O2 -g -fPIC -DNDEBUG
 SHARED_LDFLAGS := -shared -fPIC -Wl,-soname,${SHARED}
 
 LIBCFILES := $(wildcard ./util/*.c)
