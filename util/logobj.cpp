@@ -1,4 +1,4 @@
-#include "../include/MQPool/logobj.h"
+#include "MQPool/logobj.h"
 
 typedef struct {
   LogObj::LogLevel eLevel;
@@ -43,15 +43,14 @@ LogObj::Log()
 	  savePath_("/var/log/MQPool/"),
 	  maxSize_(100ul * 1024ul * 1024ul),
 	  maxLogSize_(20ul * 1024ul * 1024ul * 1024ul),
-	  logLevel_(DEBUG),
 	  lineBufferSize_(1024),
 	  fd_(-1) {
 }
 
 LogObj::~Log() {
-  if ( -1 != m_iFD ) {
-	close(m_iFD);
-	m_iFD = -1;
+  if (fd_ != -1 ) {
+	close(fd_);
+	fd_ = -1;
   }
 }
 
@@ -62,7 +61,6 @@ void LogObj::Dump() const {
   printf("savePath_=%s", savePath_.c_str());
   printf("maxSize_=%lld", maxSize_);
   printf("maxLogSize_=%lld", maxLogSize_);
-  printf("LogLevel_=%s", LogLevelConvert(logLevel_).c_str());
   printf("lineBufferSize_=%d", lineBufferSize_);
   printf("fd_=%d", fd_);
   printf("\n===LogObj DUMP END ============\n");
@@ -82,10 +80,6 @@ unsigned long long LogObj::GetMaxSize() const {
 
 unsigned long long LogObj::GetMaxLogSize() const {
   return maxLogSize_;
-}
-
-LogObj::LogLevel LogObj::GetLogLevel() const {
-  return logLevel_;
 }
 
 string LogObj::GetCurrentDay() const {
@@ -124,10 +118,10 @@ void LogObj::SetMaxLogSize(unsigned long long maxLogSize) {
   maxLogSize_ = maxLogSize;
 }
 
-void LogObj::SetLogLevel(const string& logLevel) {
-  logLevel = LogLevelConvert(logLevel);
-}
-
 void LogObj::SetLineBufferSize(unsigned lineBufferSize) {
   lineBufferSize_ = lineBufferSize;
+}
+
+static LogStream LogObj::MakeLogByStream(const char* file, int line, LogLevel logLevel) {
+  return stream_;
 }

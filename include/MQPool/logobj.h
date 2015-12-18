@@ -1,6 +1,7 @@
 #ifndef MQPOOL_INCLUDE_LOGOBJ_H_
 #define MQPOOL_INCLUDE_LOGOBJ_H_
 
+#include "logstream.h"
 #include <string>
 
 using std::string;
@@ -36,8 +37,6 @@ class LogObj {
 
   unsigned long long GetMaxLogSize() const;
 
-  LogLevel GetLogLevel() const;
-
   string GetCurrentDay() const;
 
   string GetCurrentFile() const;
@@ -58,10 +57,10 @@ class LogObj {
 
   void SetMaxLogSize(unsigned long long maxLogSize);
 
-  // 对LogLevel的设置就直接传string
-  void SetLogLevel(const string& logLevel);
-
   void SetLineBufferSize(unsigned lineBufferSize);
+
+  //===========================================================
+  static LogStream MakeLogByStream(const char* file, int line, LogLevel logLevel);
 
  private:
   string prefix_;                         //日志文件名，这里以模块名称来命名
@@ -69,7 +68,6 @@ class LogObj {
   string savePath_;                       //日志保存目录
   unsigned long long maxSize_;            //单个日志文件的最大尺寸
   unsigned long long maxLogSize_;         //日志总计的最大尺寸
-  LogLevel logLevel_;                     //日志级别
 
   unsigned lineBufferSize_;
 
@@ -77,7 +75,12 @@ class LogObj {
   string currentFile_;                    //当前文件名
 
   int fd_;                                //日志文件的文件描述符号
+
+  LogStream stream_;
 };
 
+#define LOG(expr) LogObj::MakeLogByStream(__FILE__, __LINE__, LogObj::expr);
+
+// 打日志使用方法：LOG(LogObj::TRACE) << "hhhhh"
 
 #endif /* MQPOOL_INCLUDE_LOGOBJ_H */
