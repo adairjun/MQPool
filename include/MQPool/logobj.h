@@ -27,7 +27,7 @@ class LogObj {
   explicit LogObj();
   virtual ~LogObj();
 
-  void Dump() const;
+  void Dump();
 
   string GetPrefix() const;
 
@@ -45,6 +45,7 @@ class LogObj {
 
   int GetFd() const;
 
+  LogStream GetStream() const;
   //======================================================================
 
   void SetPrefix(const string& prefix);
@@ -59,8 +60,17 @@ class LogObj {
 
   void SetLineBufferSize(unsigned lineBufferSize);
 
+
   //===========================================================
-  static LogStream MakeLogByStream(const char* file, int line, LogLevel logLevel);
+  LogStream MakeLogByStream(const char* file, int line, LogLevel logLevel);
+
+  /*void MakeLog(LogLevel logLevel, const char *pFormat, va_list sAp);*/
+
+
+ private:
+  string GetCurrTime(int flag) const;
+  void CheckFile();
+
 
  private:
   string prefix_;                         //日志文件名，这里以模块名称来命名
@@ -79,7 +89,9 @@ class LogObj {
   LogStream stream_;
 };
 
-#define LOG(expr) LogObj::MakeLogByStream(__FILE__, __LINE__, LogObj::expr);
+/*LogObj g_log;*/
+
+#define LOG(expr) g_log.MakeLogByStream(__FILE__, __LINE__, LogObj::expr);
 
 // 打日志使用方法：LOG(LogObj::TRACE) << "hhhhh"
 

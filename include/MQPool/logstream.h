@@ -1,15 +1,21 @@
 #ifndef MQPOOL_INCLUDE_LOGSTREAM_H
 #define MQPOOL_INCLUDE_LOGSTREAM_H
 
+#include <string>
+
+using std::string;
+
 class LogStream {
  public:
-  LogStream();
-  LogStream& (const LogStram&) = delete;
-  LogStream& operator=(const LogStream&) = delete;
+  explicit LogStream();
+  LogStream(const LogStream&);
+  LogStream& operator=(const LogStream&);
   virtual ~LogStream();
 
+  void Dump() const;
+
  public:
-  LogStream& operator<<(bool);
+ /* LogStream& operator<<(bool);
 
   LogStream& operator<<(short);
   LogStream& operator<<(unsigned short);
@@ -20,36 +26,27 @@ class LogStream {
   LogStream& operator<<(long long);
   LogStream& operator<<(unsigned long long);
 
-
-  LogStream& operator<<(const void*);
-
   LogStream& operator<<(float);
-  LogStream& operator<<(double);
+  LogStream& operator<<(double);*/
   LogStream& operator<<(char);
   LogStream& operator<<(const char*);
-  LogStream& operator<<(const unsigned char*);
 
   LogStream& operator<<(const string&);
-  LogStream& operator<<(short);
-  LogStream& operator<<(short);
-
-  LogStream& operator<<(short);
-  LogStream& operator<<(short);
 
  public:
-  void append(const char* /*restrict*/ buf, size_t len) {
-        memcpy(buffer_, buf, len);
-    }
-  const char* buffer() const {
-	  return buffer_;
-  }
+  void Append(const char* buf, unsigned int len);
 
-  void resetBuffer() {
+  const char* GetBuffer();
 
-  }
+  void ResetBuffer();
+
+  template<typename T>
+    void formatInteger(T);
 
  private:
   char buffer_[4096];
+
+  static const int kMaxNumericSize = 32;
 
 };
 
