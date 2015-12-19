@@ -9,7 +9,7 @@ SHARED := libmqpool.so
 
 INCLUDE := -I/usr/local/include -I./include
 # -lgtest 一定要放在 -lpthread 前面
-LIBS := -L/usr/local/lib -lgtest -lpthread -lglog
+LIBS := -L/usr/local/lib
 
 CFLAGS := 
 CPPFLAGS := -std=c++11 -O2 -g -fPIC -DNDEBUG
