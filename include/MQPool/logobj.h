@@ -80,6 +80,10 @@ class LogObj {
 
  public:
   //这里是仿照陈硕的logSteam写的，但是我并没有像他那样重载那么多的<<操作符
+  LogObj& operator<<(int v);
+  LogObj& operator<<(unsigned int v);
+  LogObj& operator<<(float v);
+  LogObj& operator<<(double v);
   LogObj& operator<<(const char* v);
   LogObj& operator<<(const string& v);
 

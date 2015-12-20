@@ -152,6 +152,34 @@ void LogObj::ResetBuffer() {
   memset(buffer_, 0, sizeof(buffer_));
 }
 
+LogObj& LogObj::operator <<(int v) {
+  char temp[32];
+  sprintf(temp,"%d", v);
+  *this << temp;
+  return *this;
+}
+
+LogObj& LogObj::operator <<(unsigned int v) {
+  //由于是unsigned int，使用64的长度
+  char temp[64];
+  sprintf(temp,"%d", v);
+  *this << temp;
+  return *this;
+}
+
+LogObj& LogObj::operator <<(float v) {
+  *this << static_cast<double>(v);
+  return *this;
+}
+
+LogObj& LogObj::operator <<(double v) {
+  char temp[128];
+  //这里默认仅仅保留三位小数
+  sprintf(temp,"%.3lf", v);
+  *this << temp;
+  return *this;
+}
+
 LogObj& LogObj::operator <<(const char* v) {
   if (v) {
     Append(v, strlen(v));
