@@ -1,15 +1,15 @@
-LogLevel[TRACE]-----Time:[2015-12-20 17:50:14]
+LogLevel[TRACE]-----Time:[2015-12-20 20:57:50]
 FILE:[gtest/test_log.cpp]-----LINE:[7]
 this is a trace 1 1.200
-LogLevel[DEBUG]-----Time:[2015-12-20 17:50:14]
+LogLevel[DEBUG]-----Time:[2015-12-20 20:57:50]
 FILE:[gtest/test_log.cpp]-----LINE:[8]
 this is a debug 2 2.200
-LogLevel[INFO]-----Time:[2015-12-20 17:50:14]
+LogLevel[INFO]-----Time:[2015-12-20 20:57:50]
 FILE:[gtest/test_log.cpp]-----LINE:[9]
 this is a info 3 3.200
-LogLevel[ERROR]-----Time:[2015-12-20 17:50:14]
+LogLevel[ERROR]-----Time:[2015-12-20 20:57:50]
 FILE:[gtest/test_log.cpp]-----LINE:[10]
 this is a error 4 4.200
-LogLevel[FATAL]-----Time:[2015-12-20 17:50:14]
+LogLevel[FATAL]-----Time:[2015-12-20 20:57:50]
 FILE:[gtest/test_log.cpp]-----LINE:[11]
 this is a fatal 5 5.200
