@@ -5,6 +5,7 @@
  *  使用boost的xml解析库,也推荐使用rapidxml,而且boost的xml解析库用的就是rapidxml
  */
 
+#include "object.h"
 #include <string>
 #include <vector> 
 #include <map>
@@ -19,7 +20,7 @@ using boost::property_tree::ptree;
 
 typedef boost::shared_ptr<boost::property_tree::ptree> ptreePtr;
 
-class ParseXmlObj {
+class ParseXmlObj : public Object {
  public:
   explicit ParseXmlObj();
   explicit ParseXmlObj(string configPath);
