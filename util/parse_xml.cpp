@@ -2,6 +2,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 
+
 ParseXmlObj::ParseXmlObj() 
     : pt_(new ptree) {
     configPath_ = "../config/messageQueue.xml";
