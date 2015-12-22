@@ -35,7 +35,7 @@ bool ClassFactory::AddObject(const char* className, ObjectCreate_t pCreate) {
   return true;
 }
 
-Object* ClassFactory::GetObject(const string& className) {
+void* ClassFactory::GetObject(const string& className) {
   if (factoryMap_.count(className) == 1) {
     //这里就调用CreateObject_t()
     return factoryMap_[className]();
@@ -44,7 +44,7 @@ Object* ClassFactory::GetObject(const string& className) {
   }
 }
 
-Object* ClassFactory::GetObject(const char* className) {
+void* ClassFactory::GetObject(const char* className) {
   string class_name(className);
   return GetObject(class_name);
 }

@@ -12,8 +12,10 @@ using std::make_pair;
 /*
  * 使用这个typedef的前提是需要Object的派生类实现自己的无参构造函数
  * 如果没有无参构造函数的话当然是不能成功的
+ * 这里返回一个空指针的原因是为了能将函数指针统一放入factoryMap_当中
  */
-typedef Object *(*ObjectCreate_t)();
+typedef void* (*ObjectCreate_t)();
+
 /*
  * 使用factory模式来模拟JAVA的反射机制
  */
@@ -35,13 +37,18 @@ class ClassFactory : public Object {
    * 就没有前面的把返回值赋值给_bUnused的用法了
    * 倒不是说这个_bUnused有多重要，看我给它起的名字是unused就知道它没有用了，是因为这个宏的使用一定是在函数的外部使用
    * 这样一来简单的调用AddObject就会有错：ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name)
-   * 因为C++不允许这样做
-   * 但是赋值就不一样，赋值可以直接在函数外部赋值，所以下面的宏的用法包括这里的返回值为bool而不是void的用法就是这么个意思
+   * 因为C++不允许在全局的作用域当中调用函数。而写成这种形式：
+   * static bool _bUnused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
+   * 这个__attribute__((unused))是编译器的内置宏，就是告诉编译器当这个函数没有被使用到的时候不要抛出警告，因为C++的规则就是定义没有调用的函数是有警告的
+   * 所以上面那条语句其实等价于
+   * static bool _bUnused = ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
+   * 这就是初始化一个全局变量了，C++就判断合法
+   * 所以下面的宏的用法包括这里的返回值为bool而不是void的用法就是这么个意思
    */
   bool AddObject(const string& className, ObjectCreate_t pCreate);
   bool AddObject(const char* className, ObjectCreate_t pCreate);
-  Object* GetObject(const string& className);
-  Object* GetObject(const char* className);
+  void* GetObject(const string& className);
+  void* GetObject(const char* className);
 
   map<string, ObjectCreate_t> GetMap() const;
 
@@ -50,11 +57,11 @@ class ClassFactory : public Object {
 };
 
 #define DECLARE_CLASS_CREATE(class_name)	    	\
-	static Object* CreateClass##class_name ();
+	static void* CreateClass##class_name ();
 
 #define IMPL_CLASS_CREATE(class_name)	            \
-	static Object* CreateClass##class_name (){	    \
-		return new class_name();			        \
+	static void* CreateClass##class_name (){	    \
+		return (void*)(new class_name());			\
 	};											    \
 	static bool _bUnused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
 
