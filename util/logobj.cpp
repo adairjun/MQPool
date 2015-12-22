@@ -1,4 +1,5 @@
 #include "MQPool/logobj.h"
+#include <boost/filesystem.hpp>
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -84,8 +85,14 @@ LogObj::LogObj(const string& logName,
     : logName_(logName),
       savePath_(savePath),
 	  logLevel_(logLevel) {
-	logName_ += GetCurrentTime(0);
+	//先判断一下savePath_是否存在，并且是否是一个目录
+	if (!boost::filesystem::is_directory(savePath_)) {
+	  //如果不存在这个savePath_目录的话，就创建这个目录
+	  //需要保证有创建这个目录的权限
+      boost::filesystem::create_directory(savePath_);
+	}
 	memset(buffer_, 0, 2048);
+	logName_ += GetCurrentTime(0);
 	//获取到当前的时间，再把__FILE,__LINE__ 还有日志级别先写入到buffer_当中
 	string level = LogObj::LogLevelConvert(logLevel);
 	string now = GetCurrentTime(1);
