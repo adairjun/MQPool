@@ -13,6 +13,7 @@ using std::make_pair;
  * 使用这个typedef的前提是需要Object的派生类实现自己的无参构造函数
  * 如果没有无参构造函数的话当然是不能成功的
  * 这里返回一个空指针的原因是为了能将函数指针统一放入factoryMap_当中
+ * 我在考虑使用boost::any来代替这里的void*,或者使用boost::function来代替这里的函数指针
  */
 typedef void* (*ObjectCreate_t)();
 
@@ -28,6 +29,15 @@ class ClassFactory : public Object {
   void Dump() const;
 
  public:
+  /*
+   * Effective C++的告诫：必须返回对象的时候，不要返回reference,
+   * 因为任何时候看到一个reference声明式，都应该立刻问自己：它的另外一个名字是什么?
+   * 因为它一定是某物的另一个名称。
+   * Effective C++特地指明了当返回一个local static对象的reference的时候，要确保不能同时需要多个这种对象
+   * 这在单线程当中很容易实现，确保了这种对象不同时需要的话，就可以使用条款4的singleton手法
+   * 但是在多线程环境当中可不能用，任何一种non-const static对象，不论它是local还是non-local，在多线程环境当中等待某事发生都会有麻烦
+   * 为了避免这种麻烦，这个函数应该用在程序的单线程启动阶段，就是在多线程还没启动的时候就先调用了，这就可以消除与初始化有关的race conditions
+   */
   static ClassFactory& Instance();
   /*
    * 关于为什么要把这里的返回值设置成为bool而不是void，原因是

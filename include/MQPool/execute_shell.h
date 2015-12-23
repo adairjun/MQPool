@@ -5,7 +5,9 @@
 #include <string>
 
 using std::string;
-
+/*
+ * 其实这个功能一个non-member函数就能做
+ */
 class ExecuteShell : public Object {
  public:
   ExecuteShell();

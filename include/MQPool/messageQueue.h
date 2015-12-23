@@ -10,7 +10,7 @@ class MessageQueue : public Object {
  public:
   typedef struct messageType {
     int length;
-    char buffer[length];
+    /*char buffer[length];*/
   }msgType;
 
 
