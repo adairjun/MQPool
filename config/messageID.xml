@@ -1,9 +1,9 @@
 <IDs>
     <!-- WORKFLOW 0 ~ 100 -->
-    <TID id="CREATE_WORKFLOW_REQUEST" value="1"/>
-    <TID id="CREATE_WORKFLOW_RESPONSE" value="2"/>
+    <MID id="CREATE_WORKFLOW_REQUEST" value="1"/>
+    <MID id="CREATE_WORKFLOW_RESPONSE" value="2"/>
 
     <!-- HADOOP 101 ~ 200 -->
-    <TID id="CRAETE_HADOOP_INSTANCE_REQUEST" value="101"/>
-    <TID id="CRAETE_HADOOP_INSTANCE_REQUEST" value="102"/>
+    <MID id="CRAETE_HADOOP_INSTANCE_REQUEST" value="101"/>
+    <MID id="CRAETE_HADOOP_INSTANCE_REQUEST" value="102"/>
 </IDs>

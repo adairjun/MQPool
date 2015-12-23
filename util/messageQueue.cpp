@@ -24,6 +24,7 @@ MessageQueue::~MessageQueue() {
 
 void MessageQueue::Dump() const {
   printf("\n=====MessageQueue Dump START ========== \n");
+  printf("msgFile_=%s ", msgFile_.c_str());
 
   printf("\n=====MessageQueue DUMP END ============\n");
 }
@@ -42,4 +43,15 @@ void MessageQueue::SetMsgFile(const string& msgFile) {
   msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
 }
 
+int MessageQueue::SendMsg(myMsg* message) {
+  return msgsnd(msgid_, message, sizeof(myMsg), 0);
+}
 
+int MessageQueue::RecvMsg(long type, myMsg* messagePtr) {
+  return msgrcv(msgid_, messagePtr, sizeof(myMsg), type, 0);
+
+}
+
+void MessageQueue::DeleteMsgQue() {
+  msgctl(msgid_, IPC_RMID, NULL);
+}
