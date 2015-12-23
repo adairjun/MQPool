@@ -45,13 +45,13 @@ class ClassFactory : public Object {
    * 如果返回值是void的话，宏当中的AddObject就只剩这样的了：
    * ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name)
    * 就没有前面的把返回值赋值给_bUnused的用法了
-   * 倒不是说这个_bUnused有多重要，看我给它起的名字是unused就知道它没有用了，是因为这个宏的使用一定是在函数的外部使用
+   * 倒不是说这个_Unused有多重要，看我给它起的名字是unused就知道它没有用了，是因为这个宏的使用一定是在函数的外部使用
    * 这样一来简单的调用AddObject就会有错：ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name)
    * 因为C++不允许在全局的作用域当中调用函数。而写成这种形式：
-   * static bool _bUnused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
+   * static bool _##class_name##_Unused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
    * 这个__attribute__((unused))是编译器的内置宏，就是告诉编译器当这个函数没有被使用到的时候不要抛出警告，因为C++的规则就是定义没有调用的函数是有警告的
    * 所以上面那条语句其实等价于
-   * static bool _bUnused = ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
+   * static bool _Unused = ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
    * 这就是初始化一个全局变量了，C++就判断合法
    * 所以下面的宏的用法包括这里的返回值为bool而不是void的用法就是这么个意思
    */
@@ -73,7 +73,7 @@ class ClassFactory : public Object {
 	static void* CreateClass##class_name (){	    \
 		return (void*)(new class_name());			\
 	};											    \
-	static bool _bUnused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
+	static bool _##class_name##_Unused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
 
 //#的作用是在class_name的左右两边都加上双引号，##的作用是连接两个字符串
 

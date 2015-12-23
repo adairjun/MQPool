@@ -49,6 +49,9 @@ void* ClassFactory::GetObject(const char* className) {
   return GetObject(class_name);
 }
 
+/*
+ * 我在考虑这里要不要使用std::move(factoryMap_)
+ */
 map<string, ObjectCreate_t> ClassFactory::GetMap() const {
   return factoryMap_;
 }

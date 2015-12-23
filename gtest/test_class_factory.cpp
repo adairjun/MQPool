@@ -9,15 +9,18 @@ using namespace std;
 
 //由于logobj没有实现自己的无参构造函数,所以这里的话我用parse_json来做示范
 
-//DECLARE_CLASS_CREATE(ParseJsonObj);
-//IMPL_CLASS_CREATE(ParseJsonObj);
+DECLARE_CLASS_CREATE(ParseJsonObj);
+IMPL_CLASS_CREATE(ParseJsonObj);
 
+/*
 DECLARE_CLASS_CREATE(ExecuteShell);
 IMPL_CLASS_CREATE(ExecuteShell);
+*/
 
 int main() {
   //这个string可以直接从配置文件当中读取出来
-  string class_name = "ExecuteShell";
+  /*string class_name = "ExecuteShell";*/
+  string class_name = "ParseJsonObj";
 
   if (class_name == "") {
 
