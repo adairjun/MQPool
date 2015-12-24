@@ -1,8 +1,6 @@
 #include "MQPool/message_factory.h"
 #include <string.h>
-
-#include <iostream>
-using namespace std;
+#include <boost/lexical_cast.hpp>
 
 MessageFactory::MessageFactory() {
 }
@@ -26,16 +24,12 @@ struct myMsg MessageFactory::CreateMyMsg(long messageId_,
 									  string message_) {
   struct myMsg create_msg;
   create_msg.messageId = messageId_;
-
-  char temp[4];
-  memset(temp, 0 ,4);
-  sprintf(temp, "%d", messageType_);
-  //由于这里仅仅只有5个枚举类型，所以仅仅只能够写入第一位，我们也只需要写入第一位，把temp设置为4位的目的是为了下面要使用
-  create_msg.buffer[0] = temp[0];
+  create_msg.buffer[0] = static_cast<char>(messageType_);
 
   /*
    * 写入serviceName的长度
    */
+  char temp[4];
   memset(temp, 0 ,4);
   int sendServiceNameLength = sendServiceName_.length();
   sprintf(temp, "%d", sendServiceNameLength);
@@ -56,4 +50,26 @@ struct myMsg MessageFactory::CreateMyMsg(long messageId_,
   memcpy(create_msg.buffer + 9 + sendServiceNameLength, message_.c_str(), messageLength);
 
   return create_msg;
+}
+
+void MessageFactory::ParseMyMsg(const struct myMsg& myMsg_,
+		                        long& messageId_,
+				                MessageType& messageType_,
+				                string& sendServiceName_,
+				                string& message_) {
+  messageId_ = myMsg_.messageId;
+  //先转成int型，再把int转成enum型
+  messageType_ = MessageType(static_cast<int>(myMsg_.buffer[0]));
+
+  char temp[4];
+  memset(temp, 0, 4);
+  memcpy(temp, myMsg_.buffer + 1, 4);
+  int sendServiceNameLength = boost::lexical_cast<int>(temp);
+
+  memset(temp, 0, 4);
+  memcpy(temp, myMsg_.buffer + 5, 4);
+  int messageLength = boost::lexical_cast<int>(temp);
+
+  sendServiceName_= string(myMsg_.buffer + 9, sendServiceNameLength);
+  message_ = string(myMsg_.buffer + 9 + sendServiceNameLength, messageLength);
 }

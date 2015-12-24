@@ -1,44 +1,32 @@
 #include <iostream>
-
-
-#include <stdio.h>
 #include <string.h>  
-#include <stdlib.h>  
-#include <errno.h>  
-#include <unistd.h>  
-#include <sys/types.h>  
-#include <sys/ipc.h>  
-#include <sys/stat.h>  
-#include <sys/msg.h>  
-#include "MQPool/message_factory.h"
+
+#include "MQPool/message_queue.h"
 
 using namespace std;
 
-#define MSG_FILE "key" 
-
-#define PERM S_IRUSR|S_IWUSR  
 
 int main()  
 {  
+	MessageQueue myQueue("key");
 	struct myMsg msg;
-	key_t key;  
-	int msgid;  
-	if((key=ftok(MSG_FILE,'a'))==-1)  
-	{  
-		fprintf(stderr,"Creat Key Error：%s\a\n",strerror(errno));  
-		exit(1);  
-	}  
-	if((msgid=msgget(key,PERM|IPC_EXCL))==-1)
-	{  
-		fprintf(stderr,"Creat Message Error：%s\a\n",strerror(errno));  
-		exit(1);  
-	}  
+
 	while(1)  
 	{  
-		msgrcv(msgid,&msg,sizeof(struct myMsg),1,0);
-		printf("Server Receive：%s\n",msg.buffer + 9);
-		msg.messageId =2;
-		msgsnd(msgid,&msg,sizeof(struct myMsg),0);
+		myQueue.RecvMsg(1, &msg);
+
+		long messageId;
+		MessageFactory::MessageType messageType_;
+		string sendServiceName;
+		string message;
+		MessageFactory::Instance().ParseMyMsg(msg, messageId, messageType_, sendServiceName, message);
+
+
+        cout << "sendServiceName--------" << sendServiceName << endl;
+        cout << "message--------" << message << endl;
+
+        msg = MessageFactory::Instance().CreateMyMsg(2, MessageFactory::REQUEST, "mq_server", "THIS IS RESPONSE");
+		myQueue.SendMsg(&msg);
 	}  
 	exit(0);  
 }

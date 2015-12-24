@@ -2,6 +2,7 @@
 #define MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
 
 #include "object.h"
+#include "logobj.h"
 #include <string>
 
 using std::string;
@@ -57,6 +58,14 @@ class MessageFactory : public Object {
 		                MessageType messageType_,
 						string sendServiceName_,
 						string message_);
+  /*
+   * 将myMsg给解析出来,使用引用参数来接收结果
+   */
+  void ParseMyMsg(const struct myMsg& myMsg_,
+		          long& messageId_,
+				  MessageType& messageType_,
+				  string& sendServiceName_,
+				  string& message_);
 
 };
 

@@ -1,6 +1,4 @@
-#include "MQPool/messageQueue.h"
-#include "MQPool/parse_xml.h"
-#include "MQPool/parse_json.h"
+#include "MQPool/message_queue.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>
@@ -10,12 +8,20 @@ MessageQueue::MessageQueue()
     : msgFile_("key"){
 	key_t key = ftok(msgFile_.c_str(),'a');
 	msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	if (msgid_ == -1) {
+	  LOG(INFO) << msgFile_ << " is Exist";
+	}
+	msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT);
 }
 
 MessageQueue::MessageQueue(string msgFile)
     : msgFile_(msgFile) {
 	key_t key = ftok(msgFile_.c_str(),'a');
 	msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	if (msgid_ == -1) {
+	  LOG(INFO) << msgFile_ << " is Exist";
+	}
+	msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT);
 }
 
 MessageQueue::~MessageQueue() {
@@ -44,12 +50,11 @@ void MessageQueue::SetMsgFile(const string& msgFile) {
 }
 
 int MessageQueue::SendMsg(struct myMsg* message) {
-  return msgsnd(msgid_, message, sizeof(myMsg), 0);
+  return msgsnd(msgid_, message, sizeof(struct myMsg), 0);
 }
 
 int MessageQueue::RecvMsg(long type, struct myMsg* messagePtr) {
-  return msgrcv(msgid_, messagePtr, sizeof(myMsg), type, 0);
-
+  return msgrcv(msgid_, messagePtr, sizeof(struct myMsg), type, 0);
 }
 
 void MessageQueue::DeleteMsgQue() {
