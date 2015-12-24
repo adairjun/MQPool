@@ -1,6 +1,7 @@
 #ifndef MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
 #define MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
 
+#include "object.h"
 #include <string>
 
 using std::string;
@@ -52,7 +53,7 @@ class MessageFactory : public Object {
    * sendServiceName是发送消息的程序名称，比如ExecuteShell
    * message是要发送的消息
    */
-  struct myMsg GetMyMsg(long messageId_,
+  struct myMsg CreateMyMsg(long messageId_,
 		                MessageType messageType_,
 						string sendServiceName_,
 						string message_);

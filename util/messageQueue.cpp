@@ -43,11 +43,11 @@ void MessageQueue::SetMsgFile(const string& msgFile) {
   msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
 }
 
-int MessageQueue::SendMsg(myMsg* message) {
+int MessageQueue::SendMsg(struct myMsg* message) {
   return msgsnd(msgid_, message, sizeof(myMsg), 0);
 }
 
-int MessageQueue::RecvMsg(long type, myMsg* messagePtr) {
+int MessageQueue::RecvMsg(long type, struct myMsg* messagePtr) {
   return msgrcv(msgid_, messagePtr, sizeof(myMsg), type, 0);
 
 }

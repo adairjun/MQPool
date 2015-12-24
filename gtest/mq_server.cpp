@@ -1,6 +1,6 @@
 #include <iostream>
 
-using namespace std;
+
 #include <stdio.h>
 #include <string.h>  
 #include <stdlib.h>  
@@ -10,16 +10,17 @@ using namespace std;
 #include <sys/ipc.h>  
 #include <sys/stat.h>  
 #include <sys/msg.h>  
+#include "MQPool/message_factory.h"
+
+using namespace std;
+
 #define MSG_FILE "key" 
-#define BUFFER 255  
+
 #define PERM S_IRUSR|S_IWUSR  
-struct msgtype {  
-	long mtype;  
-	char buffer[BUFFER+1];  
-};  
+
 int main()  
 {  
-	struct msgtype msg;  
+	struct myMsg msg;
 	key_t key;  
 	int msgid;  
 	if((key=ftok(MSG_FILE,'a'))==-1)  
@@ -27,17 +28,17 @@ int main()
 		fprintf(stderr,"Creat Key Error：%s\a\n",strerror(errno));  
 		exit(1);  
 	}  
-	if((msgid=msgget(key,PERM|IPC_CREAT|IPC_EXCL))==-1)  
+	if((msgid=msgget(key,PERM|IPC_EXCL))==-1)
 	{  
 		fprintf(stderr,"Creat Message Error：%s\a\n",strerror(errno));  
 		exit(1);  
 	}  
 	while(1)  
 	{  
-		msgrcv(msgid,&msg,sizeof(struct msgtype),1,0);  
-		fprintf(stderr,"Server Receive：%s\n",msg.buffer);  
-		msg.mtype=2;  
-		msgsnd(msgid,&msg,sizeof(struct msgtype),0);  
+		msgrcv(msgid,&msg,sizeof(struct myMsg),1,0);
+		printf("Server Receive：%s\n",msg.buffer + 9);
+		msg.messageId =2;
+		msgsnd(msgid,&msg,sizeof(struct myMsg),0);
 	}  
 	exit(0);  
 }

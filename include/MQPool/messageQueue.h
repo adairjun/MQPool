@@ -2,7 +2,7 @@
 #define MQPOOL_INCLUDE_MESSAGEQUEUE_H_
 
 #include "object.h"
-#include "message.h"
+#include "message_factory.h"
 #include <string>
 
 using std::string;
@@ -26,9 +26,9 @@ class MessageQueue : public Object {
    */
   void SetMsgFile(const string& msgFile);
 
-  int SendMsg(myMsg* messagePtr);
+  int SendMsg(struct myMsg* messagePtr);
 
-  int RecvMsg(long type, myMsg* messagePtr);
+  int RecvMsg(long type, struct myMsg* messagePtr);
 
   void DeleteMsgQue();
 
