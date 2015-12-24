@@ -44,11 +44,6 @@ class MessageFactory : public Object {
   void Dump() const;
 
   /*
-   * singleton
-   */
-  static MessageFactory& Instance();
-
-  /*
    * messageId是发送的消息id，定义在messageId.xml文件当中
    * messageType_是请求的类型，比如MessageFactory::REQUEST
    * sendServiceName是发送消息的程序名称，比如ExecuteShell
@@ -68,6 +63,14 @@ class MessageFactory : public Object {
 				  string& message_);
 
 };
+
+/*
+ * singleton
+ */
+inline MessageFactory& MessageFactoryInstance() {
+  static MessageFactory sInstance;
+  return sInstance;
+}
 
 
 #endif /* MQPOOL_INCLUDE_MESSAGE_FACTORY_H_ */
