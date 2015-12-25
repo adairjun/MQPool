@@ -4,7 +4,6 @@
 #include "MQPool/message_queue.h"
 #include "MQPool/parse_xml.h"
 #include <boost/lexical_cast.hpp>
-
 using namespace std;
 
 /*
