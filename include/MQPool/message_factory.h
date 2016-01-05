@@ -64,7 +64,7 @@ class MessageFactory : public Object {
 				  MessageType& messageType_,
 				  string& sendServiceName_,
 				  string& message_);
- private:
+ protected:
   //为了singleton模式，不能用public的构造函数，可以用protected和private
   MessageFactory();
 };
