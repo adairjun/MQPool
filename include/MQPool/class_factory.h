@@ -23,13 +23,17 @@ typedef void* (*ObjectCreate_t)();
  */
 class ClassFactory : public Object {
  public:
-  ClassFactory();
+  //因为是singleton模式，所以这里不能够让用户随意创建一个ClassFacotory，所以构造函数应该放在private当中去
+  //只有static ClassFactory &Instance()能调用构造函数
+
   ClassFactory(const ClassFactory&) = delete;
   ClassFactory& operator=(const ClassFactory&) = delete;
   virtual ~ClassFactory();
   void Dump() const;
 
  public:
+
+  static ClassFactory &Instance();
 
   /*
    * 关于为什么要把这里的返回值设置成为bool而不是void，原因是
@@ -55,23 +59,18 @@ class ClassFactory : public Object {
   map<string, ObjectCreate_t> GetMap() const;
 
  private:
+  ClassFactory();
   map<string, ObjectCreate_t> factoryMap_;
 };
 
 /*
- * Effective C++的告诫：必须返回对象的时候，不要返回reference,
- * 因为任何时候看到一个reference声明式，都应该立刻问自己：它的另外一个名字是什么?
- * 因为它一定是某物的另一个名称。
- * Effective C++特地指明了当返回一个local static对象的reference的时候，要确保不能同时需要多个这种对象
- * 这在单线程当中很容易实现，确保了这种对象不同时需要的话，就可以使用条款4的singleton手法
- * 但是在多线程环境当中可不能用，任何一种non-const static对象，不论它是local还是non-local，在多线程环境当中等待某事发生都会有麻烦
- * 为了避免这种麻烦，这个函数应该用在程序的单线程启动阶段，就是在多线程还没启动的时候就先调用了，这就可以消除与初始化有关的race conditions
- * 根据条款4，把这个singleton设置为inline
+ * 我犯了个错误，我最初将ClassFacotory的构造函数设为public，这就意味着用户能够自己构造一个ClassFactory，
+ * 违反了singleton的原则,所以这里的实现不应该使用
+ * inline ClassFactory& ClassFactoryInstance() {
+ *   static ClassFactory sInstance;
+ *   return sInstance;
+ * }
  */
-inline ClassFactory& ClassFactoryInstance() {
-  static ClassFactory sInstance;
-  return sInstance;
-}
 
 #define DECLARE_CLASS_CREATE(class_name)	    	\
 	static void* CreateClass##class_name ();
@@ -80,7 +79,7 @@ inline ClassFactory& ClassFactoryInstance() {
 	static void* CreateClass##class_name (){	    \
 		return (void*)(new class_name());			\
 	};											    \
-	static bool _##class_name##_Unused __attribute__((unused))= ClassFactoryInstance().AddObject(#class_name, CreateClass##class_name);
+	static bool _##class_name##_Unused __attribute__((unused))= ClassFactory::Instance().AddObject(#class_name, CreateClass##class_name);
 
 //#的作用是在class_name的左右两边都加上双引号，##的作用是连接两个字符串
 

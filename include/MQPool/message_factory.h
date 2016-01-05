@@ -37,11 +37,14 @@ class MessageFactory : public Object {
     BROADCAST = 4         //广播
   };
 
-  MessageFactory();
+  //和ClassFactory一样，这里也不能使用public的MessageFactory
+
   MessageFactory(const MessageFactory&) = delete;
   MessageFactory& operator=(const MessageFactory&) = delete;
   virtual ~MessageFactory();
   void Dump() const;
+
+  static MessageFactory &Instance();
 
   /*
    * messageId是发送的消息id，定义在messageId.xml文件当中
@@ -61,16 +64,11 @@ class MessageFactory : public Object {
 				  MessageType& messageType_,
 				  string& sendServiceName_,
 				  string& message_);
-
+ private:
+  //为了singleton模式，不能用public的构造函数，可以用protected和private
+  MessageFactory();
 };
 
-/*
- * singleton
- */
-inline MessageFactory& MessageFactoryInstance() {
-  static MessageFactory sInstance;
-  return sInstance;
-}
 
 
 #endif /* MQPOOL_INCLUDE_MESSAGE_FACTORY_H_ */

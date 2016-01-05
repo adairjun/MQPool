@@ -25,7 +25,7 @@ int main() {
   if (class_name == "") {
 
   } else if(class_name == "ParseJsonObj") {
-    ParseJsonObj* myjson = (ParseJsonObj*)ClassFactoryInstance().GetObject("ParseJsonObj");
+    ParseJsonObj* myjson = (ParseJsonObj*)ClassFactory::Instance().GetObject("ParseJsonObj");
 	vector<map<string, string> > result_array = myjson->GetChildDataArray("Config.Server.Connection");
 	for (auto key_value_map : result_array) {
 	  for (auto the_pair : key_value_map) {
@@ -38,7 +38,7 @@ int main() {
   } else if (class_name == "LogObj") {
 
   } else if (class_name == "ExecuteShell") {
-      ExecuteShell* myshell = (ExecuteShell*)ClassFactoryInstance().GetObject("ExecuteShell");
+      ExecuteShell* myshell = (ExecuteShell*)ClassFactory::Instance().GetObject("ExecuteShell");
       string output;
       myshell->execute("ls .", output);
       cout << output << endl;

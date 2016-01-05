@@ -15,7 +15,7 @@ int main(int argc,char **argv)
 	MessageQueue myQueue("key");
 	ParseXmlObj myXmlObj("../config/messageID.xml");
 	long messageId = boost::lexical_cast<long>(myXmlObj.GetAttrByAttr("IDs", "id", "CREATE_WORKFLOW_REQUEST", "value"));  //根据CREATE_WORKFLOW_REQUEST得到1
-	struct myMsg msg = MessageFactoryInstance().CreateMyMsg(messageId, MessageFactory::REQUEST, "mq_client", "THIS IS REQUEST");
+	struct myMsg msg = MessageFactory::Instance().CreateMyMsg(messageId, MessageFactory::REQUEST, "mq_client", "THIS IS REQUEST");
 
 	myQueue.SendMsg(&msg);
 
@@ -27,7 +27,7 @@ int main(int argc,char **argv)
 	MessageFactory::MessageType messageType_;
 	string sendServiceName;
 	string message;
-	MessageFactoryInstance().ParseMyMsg(msg, messageId, messageType_, sendServiceName, message);
+	MessageFactory::Instance().ParseMyMsg(msg, messageId, messageType_, sendServiceName, message);
 
 	cout << "sendServiceName--------" << sendServiceName << endl;
 	cout << "message--------" << message << endl;

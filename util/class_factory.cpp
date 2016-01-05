@@ -19,6 +19,11 @@ void ClassFactory::Dump() const {
   printf("\n===ClassFactory DUMP END ============\n");
 }
 
+ClassFactory& ClassFactory::Instance() {
+  static ClassFactory sInstance;
+  return sInstance;
+}
+
 bool ClassFactory::AddObject(const string& className, ObjectCreate_t pCreate) {
   factoryMap_.insert(make_pair(className, pCreate));
   return true;

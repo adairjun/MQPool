@@ -13,6 +13,14 @@ void MessageFactory::Dump() const {
   printf("\n===MessageFactory DUMP END ============\n");
 }
 
+/*
+ * singleton
+ */
+MessageFactory& MessageFactory::Instance() {
+  static MessageFactory sInstance;
+  return sInstance;
+}
+
 
 struct myMsg MessageFactory::CreateMyMsg(long messageId_,
 		                              MessageType messageType_,

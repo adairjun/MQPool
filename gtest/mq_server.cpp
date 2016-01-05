@@ -24,14 +24,14 @@ int main()
 		MessageFactory::MessageType messageType_;
 		string sendServiceName;
 		string message;
-		MessageFactoryInstance().ParseMyMsg(msg, messageId, messageType_, sendServiceName, message);
+		MessageFactory::Instance().ParseMyMsg(msg, messageId, messageType_, sendServiceName, message);
 
 
         cout << "sendServiceName--------" << sendServiceName << endl;
         cout << "message--------" << message << endl;
 
         messageId = boost::lexical_cast<long>(myXmlObj.GetAttrByAttr("IDs", "id", "CREATE_WORKFLOW_RESPONSE", "value"));
-        msg = MessageFactoryInstance().CreateMyMsg(messageId, MessageFactory::RESPONSE, "mq_server", "THIS IS RESPONSE");
+        msg = MessageFactory::Instance().CreateMyMsg(messageId, MessageFactory::RESPONSE, "mq_server", "THIS IS RESPONSE");
 		myQueue.SendMsg(&msg);
 	}  
 	exit(0);  
