@@ -2,6 +2,7 @@
 
 #include "MQPool/message_queue.h"
 #include "MQPool/parse_xml.h"
+#include "test.151000.153000.pb.h"
 #include <boost/lexical_cast.hpp>
 
 #include <string.h>

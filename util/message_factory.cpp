@@ -21,39 +21,30 @@ MessageFactory& MessageFactory::Instance() {
   return sInstance;
 }
 
+struct rapidMsg CreateRapidMsg(long messageId_,
+						string message_) {
+	struct rapidMsg create_msg;
+	create_msg.messageId = messageId_;
+	/*
+	 * 写入message的长度
+	 */
+	char temp[4];
+	memset(temp, 0, 4);
+	int messageLength = message_.length();
+	sprintf(temp, "%d", messageLength);
+	memcpy(create_msg.buffer, temp, 4);
 
-struct myMsg MessageFactory::CreateMyMsg(long messageId_,
-		                              MessageType messageType_,
-                                      string sendServiceName_,
-									  string message_) {
-  struct myMsg create_msg;
-  create_msg.messageId = messageId_;
-  create_msg.buffer[0] = static_cast<char>(messageType_);
+	/*
+	 * 写入message
+	 */
+	memcpy(create_msg.buffer + 4, message_.c_str(), messageLength);
+}
 
-  /*
-   * 写入serviceName的长度
-   */
-  char temp[4];
-  memset(temp, 0 ,4);
-  int sendServiceNameLength = sendServiceName_.length();
-  sprintf(temp, "%d", sendServiceNameLength);
-  memcpy(create_msg.buffer + 1, temp, 4);
+void ParseRapidMsg(const struct rapidMsg& myMsg_,
+		          long& messageId_,
+				  string& message_) {
+  messageId_ = myMsg_.messageId;
 
-  /*
-   * 写入message的长度
-   */
-  memset(temp,0, 4);
-  int messageLength = message_.length();
-  sprintf(temp, "%d", messageLength);
-  memcpy(create_msg.buffer + 5, temp, 4);
-
-  /*
-   * 写入serviceName的主体，message的主体
-   */
-  memcpy(create_msg.buffer + 9, sendServiceName_.c_str(), sendServiceNameLength);
-  memcpy(create_msg.buffer + 9 + sendServiceNameLength, message_.c_str(), messageLength);
-
-  return create_msg;
 }
 
 void MessageFactory::ParseMyMsg(const struct myMsg& myMsg_,
