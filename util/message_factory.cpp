@@ -45,26 +45,11 @@ void ParseRapidMsg(const struct rapidMsg& myMsg_,
 				  string& message_) {
   messageId_ = myMsg_.messageId;
 
-}
-
-void MessageFactory::ParseMyMsg(const struct myMsg& myMsg_,
-		                        long& messageId_,
-				                MessageType& messageType_,
-				                string& sendServiceName_,
-				                string& message_) {
-  messageId_ = myMsg_.messageId;
-  //先转成int型，再把int转成enum型
-  messageType_ = MessageType(static_cast<int>(myMsg_.buffer[0]));
-
   char temp[4];
   memset(temp, 0, 4);
-  memcpy(temp, myMsg_.buffer + 1, 4);
-  int sendServiceNameLength = boost::lexical_cast<int>(temp);
-
-  memset(temp, 0, 4);
-  memcpy(temp, myMsg_.buffer + 5, 4);
+  memcpy(temp, myMsg_.buffer, 4);
   int messageLength = boost::lexical_cast<int>(temp);
 
-  sendServiceName_= string(myMsg_.buffer + 9, sendServiceNameLength);
-  message_ = string(myMsg_.buffer + 9 + sendServiceNameLength, messageLength);
+  message_ = string(myMsg_ + 4, messageLength);
 }
+
