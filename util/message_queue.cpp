@@ -53,12 +53,12 @@ void MessageQueue::SetMsgFile(const string& msgFile) {
   msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT);
 }
 
-int MessageQueue::SendMsg(struct myMsg* message) {
-  return msgsnd(msgid_, message, sizeof(struct myMsg), 0);
+int MessageQueue::SendMsg(struct rapidMsg* message) {
+  return msgsnd(msgid_, message, sizeof(struct rapidMsg), 0);
 }
 
-int MessageQueue::RecvMsg(long type, struct myMsg* messagePtr) {
-  return msgrcv(msgid_, messagePtr, sizeof(struct myMsg), type, 0);
+int MessageQueue::RecvMsg(long type, struct rapidMsg* messagePtr) {
+  return msgrcv(msgid_, messagePtr, sizeof(struct rapidMsg), type, 0);
 }
 
 void MessageQueue::DeleteMsgQue() {

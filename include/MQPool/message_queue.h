@@ -26,9 +26,9 @@ class MessageQueue : public Object {
    */
   void SetMsgFile(const string& msgFile);
 
-  int SendMsg(struct myMsg* messagePtr);
+  int SendMsg(struct rapidMsg* messagePtr);
 
-  int RecvMsg(long type, struct myMsg* messagePtr);
+  int RecvMsg(long type, struct rapidMsg* messagePtr);
 
   void DeleteMsgQue();
 

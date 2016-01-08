@@ -50,6 +50,6 @@ void ParseRapidMsg(const struct rapidMsg& myMsg_,
   memcpy(temp, myMsg_.buffer, 4);
   int messageLength = boost::lexical_cast<int>(temp);
 
-  message_ = string(myMsg_ + 4, messageLength);
+  message_ = string(myMsg_.buffer + 4, messageLength);
 }
 
