@@ -1,4 +1,5 @@
 #include "MQPool/message_queue.h"
+#include "MQPool/logobj.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>
@@ -30,6 +31,7 @@ MessageQueue::~MessageQueue() {
 
 void MessageQueue::Dump() const {
   printf("\n=====MessageQueue Dump START ========== \n");
+  printf("msgid_=%d \n", msgid_);
   printf("msgFile_=%s ", msgFile_.c_str());
 
   printf("\n=====MessageQueue DUMP END ============\n");
@@ -53,12 +55,19 @@ void MessageQueue::SetMsgFile(const string& msgFile) {
   msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT);
 }
 
-int MessageQueue::SendMsg(struct rapidMsg* messagePtr) {
-  return msgsnd(msgid_, messagePtr, sizeof(struct rapidMsg), 0);
+void MessageQueue::SendMsg(struct rapidMsg* messagePtr) {
+  //这里的第三个参数是char数组的长度，不能是sizeof(struct rapidMsg)
+  int result = msgsnd(msgid_, messagePtr, _MYMSG_BUFFER_, 0);
+  if (result == -1) {
+	  LOG(ERROR) << "SendMsg Error!\n";
+  }
 }
 
-int MessageQueue::RecvMsg(long type, struct rapidMsg* messagePtr) {
-  return msgrcv(msgid_, messagePtr, sizeof(struct rapidMsg), type, 0);
+void MessageQueue::RecvMsg(long type, struct rapidMsg* messagePtr) {
+   int result= msgrcv(msgid_, messagePtr, _MYMSG_BUFFER_, type, 0);
+   if (result == -1) {
+	   LOG(ERROR) << "RecvMsg Error!\n";
+   }
 }
 
 void MessageQueue::DeleteMsgQue() {
