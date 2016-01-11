@@ -12,6 +12,7 @@ using std::string;
 class ShmAllocator : public Object {
  public:
   explicit ShmAllocator();
+  explicit ShmAllocator(string shmFile);
   ShmAllocator(const ShmAllocator&) = delete;
   ShmAllocator& operator=(const ShmAllocator&) = delete;
   virtual ~ShmAllocator();
@@ -22,7 +23,7 @@ class ShmAllocator : public Object {
   string GetShmFile() const;
 
   /*
-   * 设置了msgFile_之后，连带生成新的msgid_
+   * 设置了shmFile_之后，连带生成新的shmid_
    */
   void SetShmFile(const string& msgFile);
 
@@ -31,7 +32,6 @@ private:
 
   //用于ftok的shmFile_
   string shmFile_;
-
 };
 
 #endif /* MQPOOL_INCLUDE_SHM_ALLOCATOR_H_ */

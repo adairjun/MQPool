@@ -7,6 +7,9 @@
 
 MessageQueue::MessageQueue()
     : msgFile_("key"){
+	/*
+	 * 这个key文件可不能由程序删除之后再创建，因为每次创建文件的时候，由linux系统赋予的索引节点很可能不一样，那样的话就会得到不用的key_t的值
+	 */
 	key_t key = ftok(msgFile_.c_str(),'a');
 	msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
 	if (msgid_ == -1) {
@@ -26,6 +29,7 @@ MessageQueue::MessageQueue(string msgFile)
 }
 
 MessageQueue::~MessageQueue() {
+  DeleteMsgQue();
 }
 
 void MessageQueue::Dump() const {
