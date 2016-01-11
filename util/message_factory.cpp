@@ -40,7 +40,11 @@ struct rapidMsg MessageFactory::CreateRapidMsg(long messageId_,
 	/*
 	 * 写入message
 	 */
-	memcpy(create_msg.buffer + 8, message_.c_str(), messageLength);
+    if (messageLength <=  _MYMSG_BUFFER_ - 8) { 
+	  memcpy(create_msg.buffer + 8, message_.c_str(), messageLength);
+    } else {
+      LOG(ERROR) << "buffer's space is not enough for message\n";
+    }
 	return std::move(create_msg);
 }
 

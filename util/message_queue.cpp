@@ -29,7 +29,7 @@ MessageQueue::MessageQueue(string msgFile)
 }
 
 MessageQueue::~MessageQueue() {
-  DeleteMsgQue();
+  //DeleteMsgQue();
 }
 
 void MessageQueue::Dump() const {
