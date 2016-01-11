@@ -26,7 +26,6 @@ MessageQueue::MessageQueue(string msgFile)
 }
 
 MessageQueue::~MessageQueue() {
-
 }
 
 void MessageQueue::Dump() const {

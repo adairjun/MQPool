@@ -73,5 +73,10 @@ int main()
     msg = MessageFactory::Instance().CreateRapidMsg(messageId, str);
 	myQueue.SendMsg(&msg);
   }
-  exit(0);
+  /*
+   * 这里没有删除消息队列的机会，因为首先客户端肯定不能删除消息队列，否则服务端往队列当中写的消息就全部没有了
+   * 然而服务端又处于无限循环当中，执行不到这个DeleteMsgQue的程序，看来只能使用ipcs 和 ipcrm这两个linux命令来删除
+   */
+  myQueue.DeleteMsgQue();
+  return 0;
 }
