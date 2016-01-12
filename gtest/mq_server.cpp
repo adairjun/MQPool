@@ -2,8 +2,8 @@
 #include <string.h>  
 
 #include "MQPool/message_queue.h"
-#include "rapidmsg.pb.h"
-#include "test.151000.153000.pb.h"
+#include "rapidmsg/rapidmsg.pb.h"
+#include "rapidmsg/test.151000.153000.pb.h"
 #include <boost/lexical_cast.hpp>
 using namespace std;
 using namespace rapidmsg;

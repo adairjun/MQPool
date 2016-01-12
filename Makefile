@@ -7,7 +7,7 @@ AR := ar
 LIBRARY := libmqpool.a
 SHARED := libmqpool.so
 
-INCLUDE := -I/usr/local/include -I./include -I../message/include
+INCLUDE := -I/usr/local/include -I./include -I../rapidmsg/include
 LIBS := -L/usr/local/lib -lboost_system -lboost_filesystem -lprotobuf
 
 CFLAGS := 
@@ -51,7 +51,7 @@ $(SHARED):
 	$(QUIET_CXX)$(CXX) $(SHARED_LDFLAGS) -o $@ $(LIBOBJECTS) $(LIBS)
 
 $(TARGETS): $(OBJECTS)
-	$(QUIET_LINK)$(CXX) -DNDEBUG -o $@ $(addsuffix .o, $@) $(LIBS) -L. -lmqpool -L../message/lib -lmessage 
+	$(QUIET_LINK)$(CXX) -DNDEBUG -o $@ $(addsuffix .o, $@) $(LIBS) -L. -lmqpool -L../rapidmsg -lrapidmsg
 
 #下面的Makefile其实只是为了使用安静模式而已,如果将下面的代码去掉的话也能编译成功,因为默认的make规则将被执行
 ./util/%.o:./util/%.c
