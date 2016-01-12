@@ -79,5 +79,5 @@ clean:
 	@echo "--------------------------make clean-----------------------"
 
 install:
-	cp -r ./include/DBPool /usr/local/include
+	cp -r ./include/MQPool /usr/local/include
 	cp $(LIBRARY) $(SHARED) /usr/local/lib 
