@@ -6,7 +6,6 @@
  * rapidjson是仿造rapidxml写出来的,不过没有用在boost库当中
  */
 
-#include "object.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -21,7 +20,7 @@ using boost::property_tree::ptree;
 
 typedef boost::shared_ptr<boost::property_tree::ptree> ptreePtr;
 
-class ParseJsonObj : public Object {
+class ParseJsonObj {
  public:
   explicit ParseJsonObj();
   explicit ParseJsonObj(string configPath);

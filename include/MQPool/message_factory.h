@@ -1,7 +1,6 @@
 #ifndef MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
 #define MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
 
-#include "object.h"
 #include "logobj.h"
 #include <string>
 
@@ -16,7 +15,7 @@ struct rapidMsg {
   char buffer[_MYMSG_BUFFER_];
 };
 
-class MessageFactory : public Object {
+class MessageFactory {
  public:
 
   //和ClassFactory一样，这里也不能使用public的MessageFactory

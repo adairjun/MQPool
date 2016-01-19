@@ -1,13 +1,12 @@
 #ifndef MQPOOL_INCLUDE_MESSAGE_QUEUE_H_
 #define MQPOOL_INCLUDE_MESSAGE_QUEUE_H_
 
-#include "object.h"
 #include "message_factory.h"
 #include <string>
 
 using std::string;
 
-class MessageQueue : public Object {
+class MessageQueue {
  public:
   explicit MessageQueue();
   explicit MessageQueue(string msgFile);

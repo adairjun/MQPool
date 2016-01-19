@@ -1,7 +1,6 @@
 #ifndef MQPOOL_INCLUDE_CLASS_FACTORY_H_
 #define MQPOOL_INCLUDE_CLASS_FACTORY_H_
 
-#include "object.h"
 #include <string>
 #include <map>
 
@@ -21,7 +20,7 @@ typedef void* (*ObjectCreate_t)();
 /*
  * 使用factory模式来模拟JAVA的反射机制
  */
-class ClassFactory : public Object {
+class ClassFactory {
  public:
   //因为是singleton模式，所以这里不能够让用户随意创建一个ClassFacotory，所以构造函数应该放在protected当中去
   //只有static ClassFactory &Instance()能调用构造函数

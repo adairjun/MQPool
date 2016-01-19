@@ -1,12 +1,11 @@
 #ifndef MQPOOL_INCLUDE_LOGOBJ_H
 #define MQPOOL_INCLUDE_LOGOBJ_H
 
-#include "object.h"
 #include <string>
 
 using std::string;
 
-class LogObj : public Object {
+class LogObj {
  public:
   //日志的级别
   typedef enum {

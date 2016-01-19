@@ -1,7 +1,6 @@
 #ifndef MQPOOL_INCLUDE_SHM_ALLOCATOR_H_
 #define MQPOOL_INCLUDE_SHM_ALLOCATOR_H_
 
-#include "object.h"
 #include <string>
 
 using std::string;
@@ -9,7 +8,7 @@ using std::string;
 /*
  * 共享内存区是可用IPC形式当中最快的，但是多线程环境下一定要加上保护,否则的话根本就不知到是哪一个线程对它进行了操作，根本没办法调试
  */
-class ShmAllocator : public Object {
+class ShmAllocator {
  public:
   explicit ShmAllocator();
   explicit ShmAllocator(string shmFile);

@@ -1,14 +1,13 @@
 #ifndef MQPOOL_INCLUDE_EXECUTE_SHELL_H_
 #define MQPOOL_INCLUDE_EXECUTE_SHELL_H_
 
-#include "object.h"
 #include <string>
 
 using std::string;
 /*
  * 其实这个功能一个non-member函数就能做
  */
-class ExecuteShell : public Object {
+class ExecuteShell {
  public:
   ExecuteShell();
   virtual ~ExecuteShell();
