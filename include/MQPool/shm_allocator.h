@@ -26,11 +26,23 @@ class ShmAllocator {
    */
   void SetShmFile(const string& msgFile);
 
-private:
+  void Attach();
+
+  void Detach();
+
+  void* GetShmAddr() const;
+
+ private:
+  // enum hack
+  enum { MAX_BYTES = 4 * 1024 * 1024 };       // 最大分配的SIZE
+
+ private:
   int shmid_;
 
   //用于ftok的shmFile_
   string shmFile_;
+
+  void* shmAddr_;   // 使用shmat获取到的值
 };
 
 #endif /* MQPOOL_INCLUDE_SHM_ALLOCATOR_H_ */
