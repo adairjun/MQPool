@@ -20,11 +20,6 @@ class MessageQueue {
 
   string GetMsgFile() const;
 
-  /*
-   * 设置了msgFile_之后，连带生成新的msgid_
-   */
-  void SetMsgFile(const string& msgFile);
-
   void SendMsg(struct rapidMsg* messagePtr);
 
   void RecvMsg(long type, struct rapidMsg* messagePtr);

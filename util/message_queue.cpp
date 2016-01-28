@@ -36,7 +36,6 @@ void MessageQueue::Dump() const {
   printf("\n=====MessageQueue Dump START ========== \n");
   printf("msgid_=%d \n", msgid_);
   printf("msgFile_=%s ", msgFile_.c_str());
-
   printf("\n=====MessageQueue DUMP END ============\n");
 }
 
@@ -46,16 +45,6 @@ int MessageQueue::GetMsgID() const {
 
 string MessageQueue::GetMsgFile() const {
   return msgFile_;
-}
-
-void MessageQueue::SetMsgFile(const string& msgFile) {
-  msgFile_ = msgFile;
-  key_t key = ftok(msgFile_.c_str(),'a');
-  msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
-  if (msgid_ == -1) {
-  	LOG(INFO) << msgFile_ << " is Exist";
-  }
-  msgid_ = msgget(key,S_IRUSR|S_IWUSR|IPC_CREAT);
 }
 
 void MessageQueue::SendMsg(struct rapidMsg* messagePtr) {
