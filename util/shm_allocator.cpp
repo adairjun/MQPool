@@ -5,31 +5,47 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
-ShmAllocator::ShmAllocator()
+ShmAllocator::ShmAllocator(bool server)
     : shmFile_("key"), shmSize_(MAX_BYTES) {
-	key_t key = ftok(shmFile_.c_str(),'a');
-	shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
-	if (shmid_ == -1) {
-      LOG(INFO) << shmFile_ << " is Exist";
+	if (server) {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	  if (shmid_ == -1) {
+        LOG(INFO) << shmFile_ << " is Exist";
+	  }
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
+      shmAddr_ = NULL;
+      pHead = NULL;
+	} else {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, 0, S_IRUSR|S_IWUSR);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
 	}
-	shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
-    shmAddr_ = NULL;
 }
 
 /*
  * shmSize 用字节为单位指定内存区的大小
  */
-ShmAllocator::ShmAllocator(string shmFile, uint64_t shmSize)
+ShmAllocator::ShmAllocator(string shmFile, uint64_t shmSize, bool server)
     : shmFile_(shmFile) {
-	// 将shmSize向上取整
-	shmSize_ = RoundUp(shmSize);
-	key_t key = ftok(shmFile_.c_str(),'a');
-	shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
-	if (shmid_ == -1) {
-	  LOG(INFO) << shmFile_ << " is Exist";
+	if (server) {
+	  // 将shmSize向上取整
+	  shmSize_ = RoundUp(shmSize);
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	  if (shmid_ == -1) {
+	    LOG(INFO) << shmFile_ << " is Exist";
+	  }
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
+	} else {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, 0, S_IRUSR|S_IWUSR);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
 	}
-	shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
-	shmAddr_ = NULL;
 }
 
 ShmAllocator::~ShmAllocator() {
@@ -43,7 +59,6 @@ void ShmAllocator::Dump() const {
   printf("shmSize_=%lu ", shmSize_);
   printf("\n=====ShmAllocator DUMP END =============\n");
 }
-
 
 int ShmAllocator::GetShmID() const {
   return shmid_;
@@ -61,8 +76,19 @@ void* ShmAllocator::GetShmAddr() const {
   return shmAddr_;
 }
 
+uint64_t ShmAllocator::GetFreeSize() const {
+  return pHead->memorySize - pHead->currentOffset;
+}
+
+uint64_t ShmAllocator::GetTotalFreeSize() const {
+  return pHead->memorySize - pHead->currentOffset + pHead->managedSize;
+}
+
 void ShmAllocator::Attach() {
   shmAddr_ = shmat(shmid_, NULL, 0);
+}
+
+void ShmAllocator::InitPHead() {
   // 设置pHead
   pHead = (Head_t*)shmAddr_;
   pHead->memorySize = shmSize_;
@@ -77,12 +103,12 @@ void ShmAllocator::Attach() {
   // 初始化链表
   for (uint64_t i = 0; i < pHead->maxBytes / pHead->blockSize; ++i) {
     pHead->szFreeList[i] = 0;
-    if (i != 0) {
-      // 由于Head_t里面已经包含了szFreeList[0]，所以就不能把0给加上
-      offset += sizeof(uint64_t);
-    }
+	if (i != 0) {
+	// 由于Head_t里面已经包含了szFreeList[0]，所以就不能把0给加上
+	  offset += sizeof(uint64_t);
+	}
   }
-  pHead->currentOffset = offset;  //还是offset - sizeof(uint64_t)?
+  pHead->currentOffset = offset;
 }
 
 void ShmAllocator::Detach() {
@@ -97,7 +123,7 @@ uint64_t ShmAllocator::RoundUp(uint64_t size) const {
   // return ((size + (uint64_t)BLOCK_SIZE - 1) & ~((uint64_t)BLOCK_SIZE - 1));
 }
 
-void* ShmAllocator::Allocate(uint64_t size) {
+void* ShmAllocator::Allocate(uint64_t size, uint64_t id) {
   // 从内存池当中分配的内存空间也要加上一个头，这个头是uint64_t类型的，值就是size
   uint64_t realSize = RoundUp(size + sizeof(uint64_t));
   if (realSize == 0) {
@@ -144,6 +170,9 @@ void* ShmAllocator::Allocate(uint64_t size) {
   // 分出去的内存区不在碎片空间的统计当中了
   pHead->managedSize -= realSize;
 
+  // 由于进程间通信的需要，这里要将偏移量和id建立起映射，为了其他进程能够找到这个指针
+  IdToOffsetMap.insert(make_pair(id, (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_));
+
   return (char *)pMem + sizeof(uint64_t);     //sizeof(uint64_t)是size的空间。只保留size就可以了，Pointer_t结构的next已经没用了，可以覆盖掉
 }
 
@@ -166,3 +195,7 @@ bool ShmAllocator::Deallocate(void *ptr) {
   pHead->managedSize += pMem->size;
 }
 
+void* ShmAllocator::GetMemById(uint64_t id) {
+  uint64_t offset = IdToOffsetMap[id];
+  return (char*)shmAddr_+ offset;
+}

@@ -2,16 +2,23 @@
 #define MQPOOL_INCLUDE_SHM_ALLOCATOR_H_
 
 #include <string>
+#include <map>
 
 using std::string;
+using std::map;
+using std::make_pair;
 
 /*
  * 共享内存区是可用IPC形式当中最快的，但是一定要加上保护
  */
 class ShmAllocator {
  public:
-  explicit ShmAllocator();
-  explicit ShmAllocator(string shmFile, uint64_t shmSize);
+  /*
+   * 当server为true的时候，执行的是创建一个共享内存区
+   * 当server为false的时候，执行的是获取已经存在的共享内存区
+   */
+  explicit ShmAllocator(bool server);
+  explicit ShmAllocator(string shmFile, uint64_t shmSize, bool server);
   ShmAllocator(const ShmAllocator&) = delete;
   ShmAllocator& operator=(const ShmAllocator&) = delete;
   virtual ~ShmAllocator();
@@ -28,14 +35,33 @@ class ShmAllocator {
    */
   void* GetShmAddr() const;
 
+  /*
+   * 获取剩余的大块内存空间
+   */
+  uint64_t GetFreeSize() const;
+
+  /*
+   * 获取全部剩余空间：大块内存空间加上所有碎片空间
+   */
+  uint64_t GetTotalFreeSize() const;
+
+  /*
+   * 如果是创建一个不存在的共享内存区，那么调用Attach()之后要使用InitPHead来初始化pHead
+   * 如果仅仅只是访问已经存在的内存区，就不要乱动InitPHead
+   */
   void Attach();
+
+  void InitPHead();
 
   void Detach();
 
-  // 关键函数：从内存池当中取出size大小的内存
-  void* Allocate(uint64_t size);
+  // 关键函数：从内存池当中取出size大小的内存, id是分配给这个内存区的id
+  void* Allocate(uint64_t size, uint64_t id);
   // 关键函数：将ptr指向的内存释放会内存池当中
   bool Deallocate(void *ptr);
+
+  //关键函数：通过id来获取到对应的内存块的地址
+  void* GetMemById(uint64_t id);
 
  private:
   //enum hack
@@ -78,6 +104,8 @@ class ShmAllocator {
   uint64_t shmSize_;  // 初始化共享内存的时候指定的大小
 
   Head_t* pHead;
+  // 这是为了起到通过id找消息的作用
+  map<uint64_t, uint64_t> IdToOffsetMap;
 };
 
 #endif /* MQPOOL_INCLUDE_SHM_ALLOCATOR_H_ */

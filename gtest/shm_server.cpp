@@ -12,8 +12,11 @@ using namespace std;
 
 int main() {
 
-  ShmAllocator shmA(THEFILE);
-  /*void* ptr = shmA*/
+  ShmAllocator shmA(true);
+  shmA.Attach();
+  shmA.InitPHead();
+  int* ptr = (int*)(shmA.Allocate(16, 12));
+  *ptr = 4567;
 
   /*key_t key = ftok(THEFILE, 'a');
  

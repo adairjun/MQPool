@@ -9,12 +9,13 @@ using namespace std;
 #define THEFILE "key"
 
 int main() {
-  ShmAllocator shmAct(THEFILE);
-  void* ptr = shmAct.GetShmAddr();
-  shmAct.Detach();
+  ShmAllocator shmAct(false);
+  shmAct.Attach();
+  int* ptr = (int*)(shmAct.GetMemById(12));
+  cout << *ptr << endl;
   /*key_t key = ftok(THEFILE, 'a');
  
-  int shmid = shmget(key, 0, S_IRUSR|S_IWUSR|IPC_CREAT);
+  int shmid = shmget(key, 0, S_IRUSR|S_IWUSR);
   int* ptr = (int*)shmat(shmid, NULL, 0);
   shmctl(shmid, IPC_RMID, NULL);*/
 
