@@ -171,7 +171,7 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t id) {
   pHead->managedSize -= realSize;
 
   // 由于进程间通信的需要，这里要将偏移量和id建立起映射，为了其他进程能够找到这个指针
-  IdToOffsetMap.insert(make_pair(id, (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_));
+  AddInIdToOffset(id, (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_));
 
   return (char *)pMem + sizeof(uint64_t);     //sizeof(uint64_t)是size的空间。只保留size就可以了，Pointer_t结构的next已经没用了，可以覆盖掉
 }
@@ -181,6 +181,11 @@ bool ShmAllocator::Deallocate(void *ptr) {
   if (offset < 0 || offset > pHead->maxBytes) {
     return false;
   }
+  // 需要在multimap当中删除这个offset
+  if (!EraseFromIdToOffset(offset)) {
+	return false;
+  }
+
   // 由于在Allocate的return当中加上了size的大小sizeof(uint64_t)，那么这里要还原的话就要把offset减去这个值
   offset -= sizeof(uint64_t);
 
@@ -196,6 +201,9 @@ bool ShmAllocator::Deallocate(void *ptr) {
 }
 
 void* ShmAllocator::GetMemById(uint64_t id) {
-  uint64_t offset = IdToOffsetMap[id];
+  /*
+   * 由于一个id可能有多个消息，那么这里就只要获取到第一个消息就可以了。
+   */
+  uint64_t offset = GetFromIdToOffset(id);
   return (char*)shmAddr_+ offset;
 }

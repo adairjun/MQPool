@@ -104,8 +104,82 @@ class ShmAllocator {
   uint64_t shmSize_;  // 初始化共享内存的时候指定的大小
 
   Head_t* pHead;
-  // 这是为了起到通过id找消息的作用
-  map<uint64_t, uint64_t> IdToOffsetMap;
 };
+
+/*
+
+ * 用一个singleton来保存偏移量
+ * 一个id就是我写在protobuf当中的id，比如说是test::JUST_TEST_REQUEST
+ * 那么一个id可以有多个消息，这里就使用multimap而不是map
+
+typedef std::multimap<uint64_t, uint64_t> IdToOffset;
+inline IdToOffset& GlobalIdToOffset() {
+  static IdToOffset themap;
+  return themap;
+}
+
+inline void AddInIdToOffset(uint64_t key, uint64_t value) {
+  IdToOffset &themap = GlobalIdToOffset();
+  themap.insert(make_pair(key,value));
+}
+
+inline uint64_t GetFromIdToOffset(uint64_t key) {
+  IdToOffset &themap = GlobalIdToOffset();
+  if(themap.count(key)) {
+	// multimap不支持下标运算，这里返回第一个key的value
+	return themap.lower_bound(key)->second;
+  } else {
+    //TODO log
+    return 0;
+  }
+}
+
+
+ * 根据value来删除pair
+
+inline bool EraseFromIdToOffset(uint64_t value) {
+  IdToOffset &themap = GlobalIdToOffset();
+  for (IdToOffset::iterator iter = themap.begin(); iter != themap.end(); ++iter) {
+    if (iter->second == value) {
+      themap.erase(iter);
+      return true;
+    }
+  }
+  return false;
+}
+*/
+
+/*
+ * 这也是一个共享内存，算是管理者内存，为的是把id和offset的映射关系保存下来
+ * 一个id就是我写在protobuf当中的id，比如说是test::JUST_TEST_REQUEST
+ * 这是一个singleton,而且使用了pImpl idiom手法
+ */
+class ManagerMem {
+ public:
+  Init();                         // 初始化
+ protected:
+  ManagerMem();
+ private:
+  typedef struct {
+	char[32] shmFile;              // 注意：这里是被管理的共享内存的shmFile
+    uint64_t length;               // 管理内存的总长度
+  } ManagerMemHead_t;              // struct的字节对齐规则是这样的，先为char[32]分配内存，占32个字节，然后为length分配字节，由于length占4个字节
+                                   // 而已经分配的32个字节是4的倍数，那么分配的字节就是32+4 = 36
+  typedef struct {
+	uint64_t id;
+	uint64_t offset;
+	bool isReaded;
+	bool canBeOverwrite;
+  } Map_t;                        // 这就是在管理内存当中存储的节点，管理内存的ManagerMemHead_t之后，这些节点是按照普通的链表来排序
+                                  // 要想遍历这些节点效率较低，我正在思考如何使用红黑树的数据结构来存储节点
+};
+
+/*
+
+inline ShmAllocator& GlobalManagerMem() {
+  static ShmAllocator managerMem;
+  return managerMem;
+}
+*/
 
 #endif /* MQPOOL_INCLUDE_SHM_ALLOCATOR_H_ */
