@@ -33,6 +33,9 @@ ShmAllocator::ShmAllocator(string shmFile, uint64_t shmSize, bool server)
 	  // 将shmSize向上取整
 	  shmSize_ = RoundUp(shmSize);
 	  key_t key = ftok(shmFile_.c_str(),'a');
+	  if (key == -1) {
+		LOG(ERROR) <<"ftok return -1";
+	  }
 	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
 	  if (shmid_ == -1) {
 	    LOG(INFO) << shmFile_ << " is Exist";
@@ -42,6 +45,9 @@ ShmAllocator::ShmAllocator(string shmFile, uint64_t shmSize, bool server)
 	  pHead = NULL;
 	} else {
 	  key_t key = ftok(shmFile_.c_str(),'a');
+	  if (key == -1) {
+	  	LOG(ERROR) <<"ftok return -1";
+	  }
 	  shmid_ = shmget(key, 0, S_IRUSR|S_IWUSR);
 	  shmAddr_ = NULL;
 	  pHead = NULL;
@@ -99,6 +105,7 @@ void ShmAllocator::Attach() {
 }
 
 void ShmAllocator::InitPHead() {
+  printf("pHead=%p \n", pHead);
   // 设置pHead
   pHead->mutex = 1;                      // 初始化的时候将mutex设置为解锁状态
   pHead->memorySize = shmSize_;
@@ -110,6 +117,8 @@ void ShmAllocator::InitPHead() {
   pHead->iReady = READY_FLAG;
 
   uint64_t offset = sizeof(Head_t);
+  printf("offset=%lu \n", offset);
+  printf("sizeof(uint64_t)=%lu \n", sizeof(uint64_t));
   // 初始化链表
   for (uint64_t i = 0; i < pHead->maxBytes / pHead->blockSize; ++i) {
     pHead->szFreeList[i] = 0;
@@ -119,6 +128,7 @@ void ShmAllocator::InitPHead() {
 	}
   }
   pHead->currentOffset = offset;
+  printf("pHead->currentOffset=%lu \n", pHead->currentOffset);
 }
 
 void ShmAllocator::Detach() {
@@ -136,6 +146,7 @@ uint64_t ShmAllocator::RoundUp(uint64_t size) const {
 void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
   // 从内存池当中分配的内存空间也要加上一个头，这个头是uint64_t类型的，值就是size
   uint64_t realSize = RoundUp(size + sizeof(uint64_t));
+  printf("realSize=%lu", realSize);
   if (realSize == 0) {
 	return NULL;
   }
@@ -146,7 +157,6 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
   // szFreeList[bucket]和realSize也就有了一一映射的关系，在szFreeList[bucket]当中保存realSize的指针的偏移量
   // 那么当我需要realSize大小的内存的时候，就可以先通过szFreeList[bucket]检索出内存碎片的偏移量。
   int bucket = realSize / pHead->blockSize - 1;
-
   if (pHead->szFreeList[bucket] == 0) {
     // 如果检索出的内存碎片的偏移量是0，那么就说明：要么是这个内存池当中没有realSize大小的内存碎片，要么就是这个碎片现在正在被占用
 	// 不管是哪一种情况，现在都需要创建realSize大小的内存碎片
@@ -173,6 +183,7 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
   // 陈硕老师在他的书里面也说了多进程+多线程这个模式不仅没有多进程和多线程的优点，反而集合了它们的缺点，所以使用多进程+多线程的这个模式很少，大可不必担心）
   // 现在要返回可用的内存碎片的地址
   Pointer_t* pMem = (Pointer_t *)((char *)shmAddr_ + pHead->szFreeList[bucket]);
+
   // 拿到了碎片的地址，接下来就要把下一个可用的内存空间放入到szFreeList[bucket]当中去了，这个好理解
   pHead->szFreeList[bucket] = pMem->next;
   // 每分出去一个内存区，就做个记录
@@ -182,6 +193,8 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
 
   // 返回偏移量
   offset = (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_;
+
+  printf("offset=%lu \n", offset);
 
   return (char *)pMem + sizeof(uint64_t);     //sizeof(uint64_t)是size的空间。只保留size就可以了，Pointer_t结构的next已经没用了，可以覆盖掉
 }

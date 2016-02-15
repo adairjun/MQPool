@@ -8,25 +8,57 @@
 
 using namespace std;
 
-#define THEFILE "key"
+#define THEFILE "key3"
 
 int main() {
 
   ShmAllocator shmA(true);
-  shmA.Attach();
-  shmA.InitPHead();
-  uint64_t offset;
-  char* ptr = (char*)(shmA.Allocate(4, offset));
-  *ptr = 'a';
 
-  cout << offset << endl;
+  cout << "11111111111111111" << endl;
+
+  shmA.Attach();
+
+  cout << "22222222222222222" << endl;
+
+  shmA.InitPHead();
+
+  cout << "333333333333333333" << endl;
+
+  uint64_t offset;
+  void* pt = shmA.Allocate(1, offset);
+
+  cout << "4444444444444444444" << endl;
+
+  char* ptr = (char*)pt;
+  *ptr = 'a';
+  cout << "the offset is " << offset << endl;
+
   shmA.Dump();
 
-  /*key_t key = ftok(THEFILE, 'a');
- 
-  int shmid = shmget(key, 10, S_IRUSR|S_IWUSR|IPC_CREAT);
-  int* ptr = (int*)shmat(shmid, NULL, 0);
-  *ptr = 4567;*/
+  /*char* pp = (char*)shmA.GetMemByOffset(4194376);
+  cout << *pp << endl;
+
+  char* tt = (char*)shmA.GetShmAddr();
+  char* qq = tt + 4194376;
+  cout << *qq << endl;
+  cout << "the offset is " << offset << endl;
+*/
+  /*char* mm = (char*)shmA.GetShmAddr();
+   char* dd = mm + 4194303;
+   *dd = 'r';*/
+   /*cout << *dd << endl;*/
+
+
+  /*shmA.Dump();*/
+
+
+
+
+
+
+
+
+
 
   /*ManagerMem manager(true);
   manager.Attach();

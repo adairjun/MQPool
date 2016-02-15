@@ -1,0 +1,24 @@
+LogLevel[ERROR]-----Time:[2016-02-15 17:23:52]
+FILE:[util/shm_allocator.cpp]-----LINE:[37]
+ftok return -1
+LogLevel[INFO]-----Time:[2016-02-15 17:23:52]
+FILE:[util/shm_allocator.cpp]-----LINE:[41]
+key3 is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:26:21]
+FILE:[util/shm_allocator.cpp]-----LINE:[41]
+key3 is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:27:58]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:34:24]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:37:53]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:39:10]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 17:42:21]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist

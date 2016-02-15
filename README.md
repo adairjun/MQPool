@@ -2,7 +2,7 @@
 MQPool
 ======
 
-make sure there is boost, glog in your system
+make sure there is boost in your system
 ======
 单机消息队列
 ======
@@ -12,5 +12,5 @@ make sure there is boost, glog in your system
 使用make check编译gtest/目录下的测试文件
 ======
 
-使用gtest来测试代码,使用glog库来打日志
+使用gtest来测试代码
 ======

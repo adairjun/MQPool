@@ -6,15 +6,26 @@
 
 using namespace std;
 
-#define THEFILE "key"
+#define THEFILE "key3"
 
 int main(int argc, char** argv) {
   ShmAllocator shmAct(false);
   shmAct.Attach();
-  char* ptr = (char*)(shmAct.GetMemByOffset(4194376));
+  void* pt = shmAct.GetMemByOffset(4194303);   // 4 * 1024 * 1024  == 4194304
+  char* ptr = (char*)(pt);
+
   cout << *ptr << endl;
 
-  shmAct.Dump();
+
+
+  /*shmAct.Dump();*/
+
+
+
+
+
+
+
   /*key_t key = ftok(THEFILE, 'a');
  
   int shmid = shmget(key, 0, S_IRUSR|S_IWUSR);
