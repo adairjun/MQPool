@@ -7,70 +7,95 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
+using namespace rapidmsg;
 
-#define THEFILE "key3"
+/*
+ * 使用共享内存来做消息队列的任务
+ */
 
 int main() {
 
-  ShmAllocator shmA(true);
+  /*
+   * 初始化存放消息的共享内存，即主内存
+   */
+  ShmAllocator shmAllocator(true);
+  shmAllocator.Attach();
+  shmAllocator.InitPHead();
 
-  cout << "11111111111111111" << endl;
+  /* 初始化管理内存，用于管理主内存 */
 
-  shmA.Attach();
-
-  cout << "22222222222222222" << endl;
-
-  shmA.InitPHead();
-
-  cout << "333333333333333333" << endl;
-
-  uint64_t offset;
-  void* pt = shmA.Allocate(1, offset);
-
-  cout << "4444444444444444444" << endl;
-
-  char* ptr = (char*)pt;
-  *ptr = 'a';
-  cout << "the offset is " << offset << endl;
-
-  shmA.Dump();
-
-  /*char* pp = (char*)shmA.GetMemByOffset(4194376);
-  cout << *pp << endl;
-
-  char* tt = (char*)shmA.GetShmAddr();
-  char* qq = tt + 4194376;
-  cout << *qq << endl;
-  cout << "the offset is " << offset << endl;
-*/
-  /*char* mm = (char*)shmA.GetShmAddr();
-   char* dd = mm + 4194303;
-   *dd = 'r';*/
-   /*cout << *dd << endl;*/
-
-
-  /*shmA.Dump();*/
-
-
-
-
-
-
-
-
-
-
-  /*ManagerMem manager(true);
+  ManagerMem manager(true);
   manager.Attach();
   manager.InitPHead();
-  manager.AddIdOffsetMapping(1,100);
-  manager.AddIdOffsetMapping(2,200);
-  manager.AddIdOffsetMapping(3,300);
-  manager.AddIdOffsetMapping(4,400);
-  manager.AddIdOffsetMapping(5,500);
-  manager.AddIdOffsetMapping(6,600);
-  manager.AddIdOffsetMapping(7,700);
 
-  manager.Dump();*/
+  while(1) {
+	long messageId = test::JUST_TEST_REQUEST;
+
+	// 我这里保证只有这一个进程使用JUST_TEST_REQUEST这个ID，所以不用加锁, shmAllocator也是一样
+	// 但是如果有多个进程，那就必须加锁
+	uint64_t offset = manager.GetOffsetById(messageId);
+
+	if (offset != 0) {
+	  uint64_t* psize = (uint64_t*)(shmAllocator.GetMemByOffset(offset-8));
+	  uint64_t size = *psize;
+      char mess[size];
+      const void* vptr = shmAllocator.GetMemByOffset(offset);
+      memcpy(mess, vptr, size);
+      /*
+       * 获取到string类型的消息
+       */
+      string message(mess);
+
+      //反序列化
+      RMessage rmessage;
+      rmessage.ParseFromString(message);
+
+      // head
+      cout << "rmessage.head().session_no()" << rmessage.head().session_no() << endl;
+      cout << "rmessage.head().message_type()" << rmessage.head().message_type() << endl;
+      cout << "rmessage.head().client_ip()" << rmessage.head().client_ip() << endl;
+      cout << "rmessage.head().target_ip()" << rmessage.head().target_ip() << endl;
+      cout << "rmessage.head().target_port()" << rmessage.head().target_port() << endl;
+
+      //body
+      cout << "rmessage.body().GetExtension(::rapidmsg::test::just_test_request).test_id()"
+      		<< rmessage.body().GetExtension(::rapidmsg::test::just_test_request).test_id() << endl;
+      cout << "rmessage.body().GetExtension(::rapidmsg::test::just_test_request).test_name()"
+    		<< rmessage.body().GetExtension(::rapidmsg::test::just_test_request).test_name() << endl;
+
+      messageId = test::JUST_TEST_RESPONSE;
+      RMessage pmessage;
+
+      Head* head = new Head;
+      head->set_session_no("1");
+      head->set_message_type(messageId);
+      head->set_client_ip("127.0.0.1");
+      head->set_target_ip("127.0.0.1");
+      head->set_target_port(9999);
+
+      Body* body = new Body;
+
+      ResponseCode* responseCode = new ResponseCode;
+      responseCode->set_retcode(0);
+      responseCode->set_error_message("");
+
+      ::rapidmsg::test::JustTestResponse* response = body->MutableExtension(::rapidmsg::test::just_test_response);
+
+      response->set_test_id(1);
+      response->set_allocated_rc(responseCode);
+
+      pmessage.set_allocated_head(head);
+      pmessage.set_allocated_body(body);
+
+      string str;
+      pmessage.SerializeToString(&str); // 将对象序列化到字符串
+
+      void* pt = shmAllocator.Allocate(str.length(), offset);
+      memcpy(pt, str.c_str(), str.length());
+
+      // 将offset和test::JUST_TEST_RESPONSE建立映射关系
+      manager.AddIdOffsetMapping(test::JUST_TEST_RESPONSE, offset);
+	}
+  }
   return 0;
 }

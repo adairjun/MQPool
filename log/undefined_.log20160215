@@ -22,3 +22,81 @@ key is Exist
 LogLevel[INFO]-----Time:[2016-02-15 17:42:21]
 FILE:[util/shm_allocator.cpp]-----LINE:[14]
 key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 20:26:28]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 20:27:25]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 20:29:10]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 20:43:37]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:12:04]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:12:36]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:17:11]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:17:36]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:17:54]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:18:13]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:19:31]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:22:10]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:24:57]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:25:28]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:27:34]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:28:15]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:29:11]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:29:35]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:29:57]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:30:22]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 21:31:14]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 22:15:23]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 22:19:24]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 22:19:24]
+FILE:[util/shm_allocator.cpp]-----LINE:[241]
+MANAGER_MEM_FILE is Exist
+LogLevel[INFO]-----Time:[2016-02-15 22:21:13]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-15 22:21:13]
+FILE:[util/shm_allocator.cpp]-----LINE:[241]
+MANAGER_MEM_FILE is Exist

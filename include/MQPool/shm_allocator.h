@@ -69,10 +69,10 @@ class ShmAllocator {
 
  private:
   //enum hack
-  enum { BLOCK_SIZE = 8 };                    // 对齐的SIZE
+  enum { BLOCK_SIZE = 32 };                    // 对齐的SIZE, 这里不能小于sizeof(uint64_t),否则InitPHead()的时候currentOffset将会越出MAX_BYTES
   enum { MAX_BYTES = 4 * 1024 * 1024 };       // 最大分配的SIZE
   enum { MIN_BYTES = 8 };                     // 最小分配的SIZE，设置的时候不能小于BLOCK_SIZE
-  enum { READY_FLAG = 9693823 };              // 是否已经准备好的标志值, 其实这里可以直接使用1和0
+  enum { READY_FLAG = 1 };                    // 是否已经准备好的标志值, 其实这里可以直接使用1和0
 
  private:
   // 在共享内存当中的head，存储了共享内存的信息

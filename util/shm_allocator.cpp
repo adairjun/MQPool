@@ -105,7 +105,6 @@ void ShmAllocator::Attach() {
 }
 
 void ShmAllocator::InitPHead() {
-  printf("pHead=%p \n", pHead);
   // 设置pHead
   pHead->mutex = 1;                      // 初始化的时候将mutex设置为解锁状态
   pHead->memorySize = shmSize_;
@@ -117,8 +116,6 @@ void ShmAllocator::InitPHead() {
   pHead->iReady = READY_FLAG;
 
   uint64_t offset = sizeof(Head_t);
-  printf("offset=%lu \n", offset);
-  printf("sizeof(uint64_t)=%lu \n", sizeof(uint64_t));
   // 初始化链表
   for (uint64_t i = 0; i < pHead->maxBytes / pHead->blockSize; ++i) {
     pHead->szFreeList[i] = 0;
@@ -128,7 +125,6 @@ void ShmAllocator::InitPHead() {
 	}
   }
   pHead->currentOffset = offset;
-  printf("pHead->currentOffset=%lu \n", pHead->currentOffset);
 }
 
 void ShmAllocator::Detach() {
@@ -146,7 +142,6 @@ uint64_t ShmAllocator::RoundUp(uint64_t size) const {
 void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
   // 从内存池当中分配的内存空间也要加上一个头，这个头是uint64_t类型的，值就是size
   uint64_t realSize = RoundUp(size + sizeof(uint64_t));
-  printf("realSize=%lu", realSize);
   if (realSize == 0) {
 	return NULL;
   }
@@ -193,8 +188,6 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
 
   // 返回偏移量
   offset = (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_;
-
-  printf("offset=%lu \n", offset);
 
   return (char *)pMem + sizeof(uint64_t);     //sizeof(uint64_t)是size的空间。只保留size就可以了，Pointer_t结构的next已经没用了，可以覆盖掉
 }
@@ -347,7 +340,7 @@ uint64_t ManagerMem::GetOffsetById(uint64_t id) {
   for (int i = 0; i< pHead->nodeNum; ++i) {
     if (pHead->nodeList[i].overwriteFlag == 1) {
       if (pHead->nodeList[i].id == id) {
-    	pHead->nodeList[i].overwriteFlag == 0;
+    	pHead->nodeList[i].overwriteFlag = 0;
     	return pHead->nodeList[i].offset;
       }
     }

@@ -39,9 +39,6 @@ int main(int argc,char **argv)
   string str;
   rmessage.SerializeToString(&str); // 将对象序列化到字符串，除此外还可以序列化到fstream等
 
-  RMessage pmessage;
-  pmessage.ParseFromString(str);
-
   struct rapidMsg msg = MessageFactory::Instance().CreateRapidMsg(messageId, str);
   myQueue.SendMsg(&msg);
 
