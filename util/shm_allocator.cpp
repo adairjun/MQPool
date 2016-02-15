@@ -56,7 +56,16 @@ void ShmAllocator::Dump() const {
   printf("\n=====ShmAllocator Dump START ========== \n");
   printf("shmid_=%d \n", shmid_);
   printf("shmFile_=%s \n", shmFile_.c_str());
-  printf("shmSize_=%lu ", shmSize_);
+  printf("shmSize_=%lu \n", shmSize_);
+  printf("pHead->mutex=%lu \n", pHead->mutex);
+  printf("pHead->memorySize%lu \n", pHead->memorySize);
+  printf("pHead->minBytes=%lu \n", pHead->minBytes);
+  printf("pHead->maxBytes=%lu \n", pHead->maxBytes);
+  printf("pHead->blockSize=%lu \n", pHead->blockSize);
+  printf("pHead->memoryCount=%lu \n", pHead->memoryCount);
+  printf("pHead->currentOffset=%lu \n", pHead->currentOffset);
+  printf("pHead->managedSize=%lu \n", pHead->managedSize);
+  printf("pHead->iReady=%d \n", pHead->iReady);
   printf("\n=====ShmAllocator DUMP END =============\n");
 }
 
@@ -86,11 +95,12 @@ uint64_t ShmAllocator::GetTotalFreeSize() const {
 
 void ShmAllocator::Attach() {
   shmAddr_ = shmat(shmid_, NULL, 0);
+  pHead = (Head_t*)shmAddr_;
 }
 
 void ShmAllocator::InitPHead() {
   // 设置pHead
-  pHead = (Head_t*)shmAddr_;
+  pHead->mutex = 1;                      // 初始化的时候将mutex设置为解锁状态
   pHead->memorySize = shmSize_;
   pHead->minBytes = MIN_BYTES;
   pHead->maxBytes = shmSize_ > MAX_BYTES ? MAX_BYTES : shmSize_;
@@ -123,7 +133,7 @@ uint64_t ShmAllocator::RoundUp(uint64_t size) const {
   // return ((size + (uint64_t)BLOCK_SIZE - 1) & ~((uint64_t)BLOCK_SIZE - 1));
 }
 
-void* ShmAllocator::Allocate(uint64_t size, uint64_t id) {
+void* ShmAllocator::Allocate(uint64_t size, uint64_t& offset) {
   // 从内存池当中分配的内存空间也要加上一个头，这个头是uint64_t类型的，值就是size
   uint64_t realSize = RoundUp(size + sizeof(uint64_t));
   if (realSize == 0) {
@@ -170,20 +180,16 @@ void* ShmAllocator::Allocate(uint64_t size, uint64_t id) {
   // 分出去的内存区不在碎片空间的统计当中了
   pHead->managedSize -= realSize;
 
-  // 由于进程间通信的需要，这里要将偏移量和id建立起映射，为了其他进程能够找到这个指针
-  AddInIdToOffset(id, (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_));
+  // 返回偏移量
+  offset = (char *)pMem + sizeof(uint64_t) - (char*)shmAddr_;
 
   return (char *)pMem + sizeof(uint64_t);     //sizeof(uint64_t)是size的空间。只保留size就可以了，Pointer_t结构的next已经没用了，可以覆盖掉
 }
 
-bool ShmAllocator::Deallocate(void *ptr) {
-  uint64_t offset = (char *)ptr - (char *)shmAddr_;
+bool ShmAllocator::Deallocate(void *ptr, uint64_t& offset) {
+  offset = (char *)ptr - (char *)shmAddr_;
   if (offset < 0 || offset > pHead->maxBytes) {
     return false;
-  }
-  // 需要在multimap当中删除这个offset
-  if (!EraseFromIdToOffset(offset)) {
-	return false;
   }
 
   // 由于在Allocate的return当中加上了size的大小sizeof(uint64_t)，那么这里要还原的话就要把offset减去这个值
@@ -200,10 +206,166 @@ bool ShmAllocator::Deallocate(void *ptr) {
   pHead->managedSize += pMem->size;
 }
 
-void* ShmAllocator::GetMemById(uint64_t id) {
-  /*
-   * 由于一个id可能有多个消息，那么这里就只要获取到第一个消息就可以了。
-   */
-  uint64_t offset = GetFromIdToOffset(id);
+void* ShmAllocator::GetMemByOffset(uint64_t offset) {
   return (char*)shmAddr_+ offset;
+}
+
+bool ShmAllocator::Lock() {
+  if(pHead->mutex == 1) {
+	pHead->mutex = 0;
+	return true;
+  }
+  return false;
+}
+
+bool ShmAllocator::Unlock() {
+  if(pHead->mutex == 0) {
+	pHead->mutex = 1;
+	return true;
+  }
+  return false;
+}
+
+ManagerMem::ManagerMem(bool server)
+    : shmFile_("MANAGER_MEM_FILE"), shmSize_(MANAGER_MEM_BYTES) {
+	if (server) {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	  if (shmid_ == -1) {
+        LOG(INFO) << shmFile_ << " is Exist";
+	  }
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
+      shmAddr_ = NULL;
+      pHead = NULL;
+	} else {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, 0, S_IRUSR|S_IWUSR);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
+	}
+}
+
+/*
+ * shmSize 用字节为单位指定内存区的大小
+ */
+ManagerMem::ManagerMem(string shmFile, uint64_t shmSize, bool server)
+    : shmFile_(shmFile) {
+	if (server) {
+	  // 将shmSize向上取整
+	  shmSize_ = shmSize;
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT|IPC_EXCL);
+	  if (shmid_ == -1) {
+	    LOG(INFO) << shmFile_ << " is Exist";
+	  }
+	  shmid_ = shmget(key, shmSize_, S_IRUSR|S_IWUSR|IPC_CREAT);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
+	} else {
+	  key_t key = ftok(shmFile_.c_str(),'a');
+	  shmid_ = shmget(key, 0, S_IRUSR|S_IWUSR);
+	  shmAddr_ = NULL;
+	  pHead = NULL;
+	}
+}
+
+ManagerMem::~ManagerMem() {
+  Detach();
+}
+
+void ManagerMem::Dump() const {
+  printf("\n=====ManagerMem Dump START ========== \n");
+  printf("shmid_=%d \n", shmid_);
+  printf("shmFile_=%s \n", shmFile_.c_str());
+  printf("shmSize_=%lu \n", shmSize_);
+  printf("pHead->mutex=%lu \n", pHead->mutex);
+  printf("pHead->memorySize%lu \n", pHead->memorySize);
+  printf("pHead->nodeNum=%lu \n", pHead->nodeNum);
+  for (int i = 0; i < pHead->nodeNum; ++i) {
+	printf("pHead->nodeList[%d].overwriteFlag=%lu \n", i, pHead->nodeList[i].overwriteFlag);
+	printf("pHead->nodeList[%d].id=%lu \n", i, pHead->nodeList[i].id);
+	printf("pHead->nodeList[%d].offset=%lu \n", i, pHead->nodeList[i].offset);
+  }
+  printf("\n=====ManagerMem DUMP END =============\n");
+}
+
+void ManagerMem::Attach() {
+  shmAddr_ = shmat(shmid_, NULL, 0);
+  pHead = (ManagerMemHead_t*)shmAddr_;
+}
+
+void ManagerMem::InitPHead() {
+  // 设置pHead
+  pHead->mutex = 1;                      // 初始化的时候将mutex设置为解锁状态
+  pHead->memorySize = shmSize_;
+  pHead->nodeNum = 0;
+}
+
+void ManagerMem::Detach() {
+  if (shmAddr_) {
+    shmdt(shmAddr_);
+  }
+}
+
+void* ManagerMem::GetShmAddr() const {
+  return shmAddr_;
+}
+
+bool ManagerMem::AddIdOffsetMapping(uint64_t id, uint64_t offset) {
+  bool mark = false;
+  for (int i = 0; i< pHead->nodeNum; ++i) {
+	if(pHead->nodeList[i].overwriteFlag == 0) {
+      pHead->nodeList[i].id = id;
+      pHead->nodeList[i].offset = offset;
+      pHead->nodeList[i].overwriteFlag = 1;
+      mark = true;
+	}
+  }
+  // 如果队列当中并没有空的节点，那么就新增一个节点来存储
+  if (mark == false) {
+	pHead->nodeList[pHead->nodeNum].id = id;
+	pHead->nodeList[pHead->nodeNum].offset = offset;
+	pHead->nodeList[pHead->nodeNum].overwriteFlag = 1;
+	pHead->nodeNum++;
+  }
+}
+
+uint64_t ManagerMem::GetOffsetById(uint64_t id) {
+  for (int i = 0; i< pHead->nodeNum; ++i) {
+    if (pHead->nodeList[i].overwriteFlag == 1) {
+      if (pHead->nodeList[i].id == id) {
+    	pHead->nodeList[i].overwriteFlag == 0;
+    	return pHead->nodeList[i].offset;
+      }
+    }
+  }
+  return 0;                              //未查找到对应的offset
+}
+
+bool ManagerMem::EraseOffset(uint64_t offset) {
+  for (int i = 0; i< pHead->nodeNum; ++i) {
+    if (pHead->nodeList[i].overwriteFlag == 1) {
+      if (pHead->nodeList[i].offset == offset) {
+        pHead->nodeList[i].overwriteFlag = 0;
+        return true;
+      }
+	}
+  }
+  return false;
+}
+
+bool ManagerMem::Lock() {
+  if(pHead->mutex == 1) {
+	pHead->mutex = 0;
+	return true;
+  }
+  return false;
+}
+
+bool ManagerMem::Unlock() {
+  if(pHead->mutex == 0) {
+	pHead->mutex = 1;
+	return true;
+  }
+  return false;
 }

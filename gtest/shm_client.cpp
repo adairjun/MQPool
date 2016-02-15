@@ -8,16 +8,22 @@ using namespace std;
 
 #define THEFILE "key"
 
-int main() {
+int main(int argc, char** argv) {
   ShmAllocator shmAct(false);
   shmAct.Attach();
-  int* ptr = (int*)(shmAct.GetMemById(12));
+  char* ptr = (char*)(shmAct.GetMemByOffset(4194376));
   cout << *ptr << endl;
+
+  shmAct.Dump();
   /*key_t key = ftok(THEFILE, 'a');
  
   int shmid = shmget(key, 0, S_IRUSR|S_IWUSR);
   int* ptr = (int*)shmat(shmid, NULL, 0);
   shmctl(shmid, IPC_RMID, NULL);*/
+
+  /*ManagerMem manager(false);
+  manager.Attach();
+  manager.Dump();*/
 
   return 0;
 }
