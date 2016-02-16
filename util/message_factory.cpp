@@ -1,4 +1,4 @@
-#include "MQPool/message_factory.h"
+#include "MQueue/message_factory.h"
 #include <string.h>
 
 MessageFactory::MessageFactory() {

@@ -1,4 +1,4 @@
-#include "MQPool/logobj.h"
+#include "MQueue/logobj.h"
 #include <boost/filesystem.hpp>
 #include <time.h>
 #include <unistd.h>
@@ -62,7 +62,7 @@ LogObj::LogObj(const string& logName, const string& savePath, LogLevel logLevel)
 
 LogObj::LogObj(const char* FILE, int LINE, LogLevel logLevel)
     : logName_("undefined_.log"),
-	  savePath_("../log/MQPool") {
+	  savePath_("../log/MQueue") {
 	logName_ += GetCurrentTime(0);
 	memset(buffer_, 0, 2048);
 	//获取到当前的时间，再把__FILE,__LINE__ 还有日志级别先写入到buffer_当中

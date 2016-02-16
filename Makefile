@@ -4,8 +4,8 @@ CC := gcc
 CXX := g++
 AR := ar
 
-LIBRARY := libmqpool.a
-SHARED := libmqpool.so
+LIBRARY := libmqueue.a
+SHARED := libmqueue.so
 
 INCLUDE := -I/usr/local/include -I./include -I../rapidmsg/include
 LIBS := -L/usr/local/lib -lboost_system -lboost_filesystem -lprotobuf
@@ -51,7 +51,7 @@ $(SHARED):
 	$(QUIET_CXX)$(CXX) $(SHARED_LDFLAGS) -o $@ $(LIBOBJECTS) $(LIBS)
 
 $(TARGETS): $(OBJECTS)
-	$(QUIET_LINK)$(CXX) -DNDEBUG -o $@ $(addsuffix .o, $@) $(LIBS) -L. -lmqpool -L../rapidmsg -lrapidmsg
+	$(QUIET_LINK)$(CXX) -DNDEBUG -o $@ $(addsuffix .o, $@) $(LIBS) -L. -lmqueue -L../rapidmsg -lrapidmsg
 
 #下面的Makefile其实只是为了使用安静模式而已,如果将下面的代码去掉的话也能编译成功,因为默认的make规则将被执行
 ./util/%.o:./util/%.c
@@ -79,5 +79,5 @@ clean:
 	@echo "--------------------------make clean-----------------------"
 
 install:
-	cp -r ./include/MQPool /usr/local/include
+	cp -r ./include/MQueue /usr/local/include
 	cp $(LIBRARY) $(SHARED) /usr/local/lib 

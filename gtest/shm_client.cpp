@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MQPool/shm_allocator.h"
+#include "MQueue/shm_allocator.h"
 #include "rapidmsg/rapidmsg.pb.h"
 #include "rapidmsg/test.151000.153000.pb.h"
 #include <boost/lexical_cast.hpp>

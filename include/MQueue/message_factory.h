@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
-#define MQPOOL_INCLUDE_MESSAGE_FACTORY_H_
+#ifndef MQUEUE_INCLUDE_MESSAGE_FACTORY_H_
+#define MQUEUE_INCLUDE_MESSAGE_FACTORY_H_
 
 #include "logobj.h"
 #include <string>
@@ -48,4 +48,4 @@ class MessageFactory {
 
 
 
-#endif /* MQPOOL_INCLUDE_MESSAGE_FACTORY_H_ */
+#endif /* MQUEUE_INCLUDE_MESSAGE_FACTORY_H_ */

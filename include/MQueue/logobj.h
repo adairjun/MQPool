@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_LOGOBJ_H
-#define MQPOOL_INCLUDE_LOGOBJ_H
+#ifndef MQUEUE_INCLUDE_LOGOBJ_H
+#define MQUEUE_INCLUDE_LOGOBJ_H
 
 #include <string>
 
@@ -121,4 +121,4 @@ class LogObj {
  * 还有就是不能在这里savePath_的末尾不能有/符号，这是因为我在WriteLog函数当中用了/导致的
  */
 
-#endif /* MQPOOL_INCLUDE_LOGOBJ_H */
+#endif /* MQUEUE_INCLUDE_LOGOBJ_H */

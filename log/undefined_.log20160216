@@ -1,0 +1,9 @@
+LogLevel[INFO]-----Time:[2016-02-16 09:49:00]
+FILE:[util/shm_allocator.cpp]-----LINE:[241]
+MANAGER_MEM_FILE is Exist
+LogLevel[INFO]-----Time:[2016-02-16 09:52:45]
+FILE:[util/shm_allocator.cpp]-----LINE:[14]
+key is Exist
+LogLevel[INFO]-----Time:[2016-02-16 09:52:45]
+FILE:[util/shm_allocator.cpp]-----LINE:[241]
+MANAGER_MEM_FILE is Exist

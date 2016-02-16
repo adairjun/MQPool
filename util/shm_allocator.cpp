@@ -1,5 +1,5 @@
-#include "MQPool/shm_allocator.h"
-#include "MQPool/logobj.h"
+#include "MQueue/shm_allocator.h"
+#include "MQueue/logobj.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>

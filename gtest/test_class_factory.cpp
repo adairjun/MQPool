@@ -1,9 +1,9 @@
 #include <iostream>
-#include "MQPool/logobj.h"
-#include "MQPool/parse_json.h"
-#include "MQPool/parse_json.h"
-#include "MQPool/class_factory.h"
-#include "MQPool/execute_shell.h"
+#include "MQueue/logobj.h"
+#include "MQueue/parse_json.h"
+#include "MQueue/parse_json.h"
+#include "MQueue/class_factory.h"
+#include "MQueue/execute_shell.h"
 
 using namespace std;
 

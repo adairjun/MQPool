@@ -1,5 +1,5 @@
-#include "MQPool/message_queue.h"
-#include "MQPool/logobj.h"
+#include "MQueue/message_queue.h"
+#include "MQueue/logobj.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ipc.h>

@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_EXECUTE_SHELL_H_
-#define MQPOOL_INCLUDE_EXECUTE_SHELL_H_
+#ifndef MQUEUE_INCLUDE_EXECUTE_SHELL_H_
+#define MQUEUE_INCLUDE_EXECUTE_SHELL_H_
 
 #include <string>
 
@@ -18,4 +18,4 @@ class ExecuteShell {
 
 };
 
-#endif /* MQPOOL_INCLUDE_EXECUTE_SHELL_H_ */
+#endif /* MQUEUE_INCLUDE_EXECUTE_SHELL_H_ */

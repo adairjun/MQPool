@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_PARSE_JSON_H_
-#define MQPOOL_INCLUDE_PARSE_JSON_H_
+#ifndef MQUEUE_INCLUDE_PARSE_JSON_H_
+#define MQUEUE_INCLUDE_PARSE_JSON_H_
 
 /* 以前一直都是把解析json文件的代码放在池的构造函数当中,这里把它独立出来
  *  使用boost的json解析库,也推荐使用rapidjson,
@@ -176,4 +176,4 @@ class ParseJsonObj {
 };
 
 typedef boost::shared_ptr<ParseJsonObj> ParseJsonObjPtr;
-#endif /* MQPOOL_INCLUDE_PARSE_JSON_H */
+#endif /* MQUEUE_INCLUDE_PARSE_JSON_H */

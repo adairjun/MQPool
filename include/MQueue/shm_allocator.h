@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_SHM_ALLOCATOR_H_
-#define MQPOOL_INCLUDE_SHM_ALLOCATOR_H_
+#ifndef MQUEUE_INCLUDE_SHM_ALLOCATOR_H_
+#define MQUEUE_INCLUDE_SHM_ALLOCATOR_H_
 
 #include <string>
 #include <map>
@@ -181,4 +181,4 @@ class ManagerMem {
 };
 
 
-#endif /* MQPOOL_INCLUDE_SHM_ALLOCATOR_H_ */
+#endif /* MQUEUE_INCLUDE_SHM_ALLOCATOR_H_ */

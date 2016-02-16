@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "MQPool/message_queue.h"
+#include "MQueue/message_queue.h"
 #include "rapidmsg/rapidmsg.pb.h"
 #include "rapidmsg/test.151000.153000.pb.h"
 #include <boost/lexical_cast.hpp>

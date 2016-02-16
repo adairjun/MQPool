@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MQPool/logobj.h"
+#include "MQueue/logobj.h"
 
 using namespace std;
 

@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_CLASS_FACTORY_H_
-#define MQPOOL_INCLUDE_CLASS_FACTORY_H_
+#ifndef MQUEUE_INCLUDE_CLASS_FACTORY_H_
+#define MQUEUE_INCLUDE_CLASS_FACTORY_H_
 
 #include <string>
 #include <map>
@@ -84,4 +84,4 @@ class ClassFactory {
 
 //#的作用是在class_name的左右两边都加上双引号，##的作用是连接两个字符串
 
-#endif /* MQPOOL_INCLUDE_CLASSS_FACTORY_H_ */
+#endif /* MQUEUE_INCLUDE_CLASSS_FACTORY_H_ */

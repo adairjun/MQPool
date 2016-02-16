@@ -1,4 +1,4 @@
-#include "MQPool/class_factory.h"
+#include "MQueue/class_factory.h"
 
 ClassFactory::ClassFactory() {
 }

@@ -1,5 +1,5 @@
-#ifndef MQPOOL_INCLUDE_MESSAGE_QUEUE_H_
-#define MQPOOL_INCLUDE_MESSAGE_QUEUE_H_
+#ifndef MQUEUE_INCLUDE_MESSAGE_QUEUE_H_
+#define MQUEUE_INCLUDE_MESSAGE_QUEUE_H_
 
 #include "message_factory.h"
 #include <string>
@@ -34,4 +34,4 @@ class MessageQueue {
 
 };
 
-#endif /* MQPOOL_INCLUDE_MESSAGE_QUEUE_H_ */
+#endif /* MQUEUE_INCLUDE_MESSAGE_QUEUE_H_ */

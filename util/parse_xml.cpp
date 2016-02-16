@@ -1,7 +1,5 @@
-#include "MQPool/parse_xml.h"
+#include "MQueue/parse_xml.h"
 #include <boost/property_tree/xml_parser.hpp>
-
-
 
 ParseXmlObj::ParseXmlObj() 
     : pt_(new ptree) {
